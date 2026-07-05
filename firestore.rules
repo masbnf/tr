@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Requests: anyone can create, only server (admin SDK) can read/update
+    match /requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if false; // handled server-side only
+    }
+
+    // Providers: server-side only
+    match /providers/{providerId} {
+      allow read, write: if false;
+    }
+
+    // Payments: server-side only
+    match /payments/{paymentId} {
+      allow read, write: if false;
+    }
+  }
+}
