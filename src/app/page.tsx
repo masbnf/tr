@@ -196,8 +196,8 @@ export default function LandingPage() {
                     <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-5">
                       <Icon size={22} className="text-brand-600"/>
                     </div>
-                    <h3 className="font-black text-slate-900 mb-2 text-[17px]">{step.title}</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">{step.desc}</p>
+                    <h3 className="font-black text-slate-900 mb-3 text-[34px] leading-snug">{step.title}</h3>
+                    <p className="text-2xl text-slate-400 leading-relaxed">{step.desc}</p>
                   </div>
                 );
               })}
