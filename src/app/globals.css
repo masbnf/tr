@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
+@font-face {
+  font-family: "BYekan";
+  src: url("https://cdn.jsdelivr.net/gh/rastikerdar/yekan-font@master/dist/Yekan.woff") format("woff");
+  font-display: swap;
+}
 
 /* ─── Base ──────────────────────────────────────────────────────────────── */
 @layer base {
@@ -16,11 +20,15 @@
   }
 
   body {
-    font-family: "Vazirmatn", system-ui, sans-serif;
+    font-family: "BYekan", Tahoma, sans-serif;
     background-color: #f8fafc;
     color: #0f172a;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+  }
+
+  button, input, textarea, select {
+    font-family: "BYekan", Tahoma, sans-serif;
   }
 
   ::selection { background: #ff7088; color: #6d0010; }
