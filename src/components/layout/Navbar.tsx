@@ -33,7 +33,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center links — hidden on mobile */}
-        <ul className="hidden md:flex items-center gap-6 lg:gap-8 text-[15px] font-medium text-white/75">
+        <ul className="hidden md:flex items-center gap-6 lg:gap-8 text-[18px] font-medium text-white/75">
           {NAV_LINKS.map((l) =>
             l.tel ? (
               <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>

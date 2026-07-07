@@ -13,19 +13,19 @@ export default function Footer() {
           <p className="font-black text-white text-xl mb-3">
             مکانیکا<span className="text-brand-400">.</span>
           </p>
-          <p className="text-sm leading-relaxed mb-5">
+          <p className="text-lg leading-relaxed mb-5">
             خدمات سیار خودرو در محل — مکانیک، باتری، یدک‌کش و تعویض روغن در شیراز.
           </p>
-          <div className="flex items-center gap-2 text-sm">
-            <LocationIcon size={14} className="text-brand-400 shrink-0"/>
+          <div className="flex items-center gap-2 text-lg">
+            <LocationIcon size={17} className="text-brand-400 shrink-0"/>
             شیراز، ایران
           </div>
         </div>
 
         {/* Links */}
         <div>
-          <p className="font-bold text-white text-sm mb-4">دسترسی سریع</p>
-          <ul className="flex flex-col gap-2.5 text-sm">
+          <p className="font-bold text-white text-lg mb-4">دسترسی سریع</p>
+          <ul className="flex flex-col gap-2.5 text-lg">
             {[
               { href: "/",          label: "صفحه اصلی" },
               { href: "/request",   label: "درخواست سرویس" },
@@ -42,12 +42,12 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <p className="font-bold text-white text-sm mb-4">تماس با ما</p>
-          <a href="tel:+98" className="flex items-center gap-2 text-sm hover:text-brand-400 transition-colors mb-3">
-            <PhoneIcon size={14} className="text-brand-400 shrink-0"/>
+          <p className="font-bold text-white text-lg mb-4">تماس با ما</p>
+          <a href="tel:+98" className="flex items-center gap-2 text-lg hover:text-brand-400 transition-colors mb-3">
+            <PhoneIcon size={17} className="text-brand-400 shrink-0"/>
             ۰۷۱-XXXX-XXXX
           </a>
-          <p className="text-xs leading-relaxed">
+          <p className="text-base leading-relaxed">
             پاسخگوی شما هستیم<br/>۲۴ ساعته، ۷ روز هفته
           </p>
         </div>
@@ -55,7 +55,7 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-600">
           <p>© ۱۴۰۳ مکانیکا — تمامی حقوق محفوظ است</p>
           <p>طراحی و توسعه با ❤️ در شیراز</p>
         </div>

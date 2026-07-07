@@ -77,7 +77,7 @@ export default function LandingPage() {
           {/* ── LEFT panel: text content ── */}
           <div className="flex flex-col justify-center px-8 lg:px-16 py-24 lg:py-0 w-full lg:w-[46%] text-right order-2 lg:order-1">
 
-            <p className="anim-fadeup text-white/50 text-[13px] font-bold tracking-[.16em] uppercase mb-6">
+            <p className="anim-fadeup text-white/50 text-[17px] font-bold tracking-[.16em] uppercase mb-6">
               خدمات سیار خودرو · شیراز
             </p>
 
@@ -88,7 +88,7 @@ export default function LandingPage() {
               در محل شما
             </h1>
 
-            <p className="anim-fadeup delay-2 text-white/60 leading-loose mb-8 max-w-md text-right text-[17px]">
+            <p className="anim-fadeup delay-2 text-white/60 leading-loose mb-8 max-w-lg text-right text-[22px]">
               مکانیک، باتری، یدک‌کش و تعویض روغن — سریع، مطمئن،
               در کمتر از ۳۰ دقیقه در شیراز.
             </p>
@@ -112,8 +112,8 @@ export default function LandingPage() {
             {/* Trust badges */}
             <div className="anim-fadeup delay-4 grid grid-cols-2 gap-x-8 gap-y-3">
               {["بدون ثبت‌نام", "پرداخت در محل", "متخصص تأیید‌شده", "ضمانت کیفیت"].map((f) => (
-                <div key={f} className="flex items-center gap-2 text-white/55 text-[13px]">
-                  <CheckIcon size={13} className="shrink-0 text-[#e8002a]"/>
+                <div key={f} className="flex items-center gap-2 text-white/55 text-[17px]">
+                  <CheckIcon size={16} className="shrink-0 text-[#e8002a]"/>
                   {f}
                 </div>
               ))}
@@ -144,7 +144,7 @@ export default function LandingPage() {
             {STATS.map((s, i) => (
               <div key={s.l} className={`text-center py-7 px-4 ${i % 2 === 0 && i < 2 ? "border-b md:border-b-0 border-white/10" : ""} ${i < 3 ? "md:border-l border-white/10" : ""}`}>
                 <p className="font-black text-white mb-1" style={{ fontSize: "clamp(1.5rem,3vw,1.9rem)" }}>{s.v}</p>
-                <p className="text-[13px] text-white/35">{s.l}</p>
+                <p className="text-[17px] text-white/35">{s.l}</p>
               </div>
             ))}
           </div>
@@ -225,7 +225,7 @@ export default function LandingPage() {
             <h2 className="font-black text-white mb-4" style={{ fontSize: "clamp(1.75rem,4vw,2.75rem)" }}>
               آماده کمک هستیم
             </h2>
-            <p className="mb-10 leading-relaxed" style={{ fontSize: "clamp(.875rem,2vw,1rem)", color: "rgba(255,255,255,0.6)" }}>
+            <p className="mb-10 leading-relaxed" style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", color: "rgba(255,255,255,0.6)" }}>
               ۲۴ ساعته در شیراز · پاسخ در کمتر از ۳۰ دقیقه · بدون معطلی
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
