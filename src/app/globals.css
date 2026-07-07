@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: "BYekan";
-  src: url("https://cdn.jsdelivr.net/gh/rastikerdar/yekan-font@master/dist/Yekan.woff") format("woff");
-  font-display: swap;
-}
-
 /* ─── Base ──────────────────────────────────────────────────────────────── */
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
@@ -16,11 +10,11 @@
     direction: rtl;
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
-    font-size: 16px;
+    font-size: 18px;
   }
 
   body {
-    font-family: "BYekan", Tahoma, sans-serif;
+    font-family: var(--font-paeez), Tahoma, sans-serif;
     background-color: #f8fafc;
     color: #0f172a;
     -webkit-font-smoothing: antialiased;
@@ -28,7 +22,7 @@
   }
 
   button, input, textarea, select {
-    font-family: "BYekan", Tahoma, sans-serif;
+    font-family: var(--font-paeez), Tahoma, sans-serif;
   }
 
   ::selection { background: #ff7088; color: #6d0010; }

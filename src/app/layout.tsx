@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
+
+const paeez = localFont({
+  src: "./fonts/Paeez.ttf",
+  variable: "--font-paeez",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "مکانیکا | خدمات خودرو سیار شیراز",
@@ -8,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fa" dir="rtl">
+    <html lang="fa" dir="rtl" className={paeez.variable}>
       <body className="bg-gray-50 text-gray-900 min-h-screen">
         {children}
       </body>

@@ -77,7 +77,7 @@ export default function LandingPage() {
           {/* ── LEFT panel: text content ── */}
           <div className="flex flex-col justify-center px-8 lg:px-16 py-24 lg:py-0 w-full lg:w-[46%] text-right order-2 lg:order-1">
 
-            <p className="anim-fadeup text-white/50 text-[11px] font-bold tracking-[.16em] uppercase mb-6">
+            <p className="anim-fadeup text-white/50 text-[13px] font-bold tracking-[.16em] uppercase mb-6">
               خدمات سیار خودرو · شیراز
             </p>
 
@@ -88,7 +88,7 @@ export default function LandingPage() {
               در محل شما
             </h1>
 
-            <p className="anim-fadeup delay-2 text-white/60 leading-loose mb-8 max-w-md text-right text-[15px]">
+            <p className="anim-fadeup delay-2 text-white/60 leading-loose mb-8 max-w-md text-right text-[17px]">
               مکانیک، باتری، یدک‌کش و تعویض روغن — سریع، مطمئن،
               در کمتر از ۳۰ دقیقه در شیراز.
             </p>
@@ -96,13 +96,13 @@ export default function LandingPage() {
             {/* CTA buttons */}
             <div className="anim-fadeup delay-3 flex flex-col sm:flex-row gap-3 w-full sm:w-auto mb-10">
               <Link href="/request"
-                className="flex items-center justify-center gap-2 font-black px-8 py-4 rounded-xl text-[15px] transition-all duration-200 hover:-translate-y-0.5 shadow-[0_8px_32px_rgba(232,0,42,0.4)]"
+                className="flex items-center justify-center gap-2 font-black px-8 py-4 rounded-xl text-[17px] transition-all duration-200 hover:-translate-y-0.5 shadow-[0_8px_32px_rgba(232,0,42,0.4)]"
                 style={{ background: "#e8002a", color: "#fff" }}>
                 <ZapIcon size={17}/>
                 درخواست سرویس
               </Link>
               <a href="tel:+98"
-                className="flex items-center justify-center gap-2 border-2 text-white font-bold px-6 py-4 rounded-xl text-[15px] hover:bg-white/10 transition-colors"
+                className="flex items-center justify-center gap-2 border-2 text-white font-bold px-6 py-4 rounded-xl text-[17px] hover:bg-white/10 transition-colors"
                 style={{ borderColor: "rgba(255,255,255,0.25)" }}>
                 <PhoneIcon size={17}/>
                 تماس مستقیم
@@ -144,7 +144,7 @@ export default function LandingPage() {
             {STATS.map((s, i) => (
               <div key={s.l} className={`text-center py-7 px-4 ${i % 2 === 0 && i < 2 ? "border-b md:border-b-0 border-white/10" : ""} ${i < 3 ? "md:border-l border-white/10" : ""}`}>
                 <p className="font-black text-white mb-1" style={{ fontSize: "clamp(1.5rem,3vw,1.9rem)" }}>{s.v}</p>
-                <p className="text-[11px] text-white/35">{s.l}</p>
+                <p className="text-[13px] text-white/35">{s.l}</p>
               </div>
             ))}
           </div>
@@ -192,11 +192,11 @@ export default function LandingPage() {
                 const Icon = step.icon;
                 return (
                   <div key={step.num} className="bg-white border border-slate-200 rounded-3xl p-7 text-center shadow-sm hover:shadow-[0_8px_28px_rgba(232,0,42,.12)] hover:-translate-y-1 transition-all duration-300">
-                    <span className="text-[10px] font-black text-brand-300 tracking-widest block mb-4">{step.num}</span>
+                    <span className="text-[12px] font-black text-brand-300 tracking-widest block mb-4">{step.num}</span>
                     <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-5">
                       <Icon size={22} className="text-brand-600"/>
                     </div>
-                    <h3 className="font-black text-slate-900 mb-2 text-[15px]">{step.title}</h3>
+                    <h3 className="font-black text-slate-900 mb-2 text-[17px]">{step.title}</h3>
                     <p className="text-xs text-slate-400 leading-relaxed">{step.desc}</p>
                   </div>
                 );
@@ -204,7 +204,7 @@ export default function LandingPage() {
             </div>
 
             <div className="text-center mt-12">
-              <Link href="/request" className="btn-primary text-[15px] py-4 px-10 rounded-2xl">
+              <Link href="/request" className="btn-primary text-[17px] py-4 px-10 rounded-2xl">
                 <ZapIcon size={17}/> همین الان شروع کن
               </Link>
             </div>
@@ -230,12 +230,12 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/request"
-                className="flex items-center justify-center gap-2 text-white font-black px-8 py-4 rounded-xl text-[15px] transition-all hover:-translate-y-0.5 duration-200 shadow-[0_8px_28px_rgba(232,0,42,0.4)]"
+                className="flex items-center justify-center gap-2 text-white font-black px-8 py-4 rounded-xl text-[17px] transition-all hover:-translate-y-0.5 duration-200 shadow-[0_8px_28px_rgba(232,0,42,0.4)]"
                 style={{ background: "#e8002a" }}>
                 <ZapIcon size={17}/> درخواست فوری
               </Link>
               <a href="tel:+98"
-                className="flex items-center justify-center gap-2 text-white font-bold px-8 py-4 rounded-xl text-[15px] hover:bg-white/10 transition-colors"
+                className="flex items-center justify-center gap-2 text-white font-bold px-8 py-4 rounded-xl text-[17px] hover:bg-white/10 transition-colors"
                 style={{ border: "2px solid rgba(255,255,255,0.25)" }}>
                 <PhoneIcon size={17}/> تماس مستقیم
               </a>

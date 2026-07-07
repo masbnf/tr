@@ -33,7 +33,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center links — hidden on mobile */}
-        <ul className="hidden md:flex items-center gap-6 lg:gap-8 text-[13px] font-medium text-white/75">
+        <ul className="hidden md:flex items-center gap-6 lg:gap-8 text-[15px] font-medium text-white/75">
           {NAV_LINKS.map((l) =>
             l.tel ? (
               <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
@@ -51,7 +51,7 @@ export default function Navbar() {
               <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           </button>
-          <Link href="/request" className="font-black text-[13px] px-5 py-2 rounded-lg transition-colors shadow-md text-white hover:opacity-90"
+          <Link href="/request" className="font-black text-[15px] px-5 py-2 rounded-lg transition-colors shadow-md text-white hover:opacity-90"
             style={{ background: "#e8002a" }}>
             درخواست سرویس
           </Link>
