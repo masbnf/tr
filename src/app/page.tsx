@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import VehicleServiceShowcase from "@/components/landing/VehicleServiceShowcase";
 import {
   ZapIcon, WrenchIcon, LocationIcon, CheckIcon, PhoneIcon,
 } from "@/components/ui/Icons";
@@ -26,24 +27,6 @@ const TRUST = ["بدون ثبت‌نام", "پرداخت در محل", "متخص
 /* The three trust indicators shown in the mobile hero (distinct, shorter
    copy tailored for the compact mobile layout). */
 const MOBILE_TRUST = ["اعزام سریع", "متخصص تأییدشده", "پرداخت در محل"];
-
-/* Clickable hotspots overlaid on the services showcase image — positions are
-   percentages matched to each badge's center in landing-hero-car.png.
-   Hrefs are placeholders until each service gets its own destination.
-   This is the single source of truth for the service list: both the image
-   hotspots and the mobile-friendly chip grid below render from this array. */
-const SERVICE_HOTSPOTS = [
-  { label: "تعمیر موتور", href: "/request?service=engine-repair", x: 50.1, y: 16.3, color: "#ef4444" },
-  { label: "تایر",        href: "/request?service=tire",          x: 72.4, y: 22.6, color: "#a855f7" },
-  { label: "کارواش",      href: "/request?service=car-wash",      x: 86.8, y: 38.1, color: "#22d3ee" },
-  { label: "برق‌کشی",     href: "/request?service=electrical",    x: 88.4, y: 61.0, color: "#eab308" },
-  { label: "چراغ‌ها",     href: "/request?service=lights",        x: 74.2, y: 74.8, color: "#f97316" },
-  { label: "لنت ترمز",    href: "/request?service=brake-pads",    x: 50.1, y: 82.4, color: "#ef4444" },
-  { label: "بنزین",       href: "/request?service=fuel-delivery", x: 26.2, y: 74.8, color: "#10b981" },
-  { label: "باتری",       href: "/request?service=battery",       x: 11.8, y: 61.0, color: "#6366f1" },
-  { label: "رنگ خودرو",   href: "/request?service=paint",         x: 13.4, y: 38.1, color: "#ec4899" },
-  { label: "تعویض روغن",  href: "/request?service=oil-change",    x: 27.8, y: 22.6, color: "#84cc16" },
-];
 
 /* ─── Mock dashboard data ───────────────────────────────────────────────── */
 const MOCK_STATS = [
@@ -213,87 +196,12 @@ export default function LandingPage() {
               <h2 className="section-title" style={{ color: "white" }}>چه کمکی می‌تونیم بکنیم؟</h2>
             </div>
 
-            {/* ── Provided services showcase image with clickable hotspots ──
-                Frosted-glass frame (translucent + backdrop-blur + edge sheen)
-                with a faded mirror-reflection strip beneath, so the tile
-                reads as glass resting on a glossy floor rather than a flat
-                opaque panel. */}
+            {/* ── Vehicle selector + showcase image + hotspots + chips ──
+                Extracted into a client component since it owns interactive
+                state (selected vehicle); the heading above stays part of
+                this server component. */}
             <div className="lg:mt-8">
-              <div className="relative mx-auto max-w-5xl">
-                {/* Ambient floor glow under the glass */}
-                <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-2/3 h-10 rounded-full blur-2xl opacity-40 pointer-events-none"
-                  style={{ background: "radial-gradient(ellipse, rgba(232,0,42,0.35), transparent 70%)" }}
-                  aria-hidden="true" />
-
-                {/* Glass frame */}
-                <div className="relative rounded-[2rem] p-2 sm:p-2.5 backdrop-blur-xl bg-white/[0.06] border border-white/15 shadow-[0_24px_80px_rgba(0,0,0,0.35)] overflow-hidden">
-                  <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" aria-hidden="true" />
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)" }}
-                    aria-hidden="true" />
-
-                  <div className="relative rounded-[1.6rem] overflow-hidden bg-[#070b24]">
-                    <Image
-                      src="/images/landing-hero-car.png"
-                      alt="نمایش خدمات خودرو مکانیکا"
-                      width={1254}
-                      height={1254}
-                      className="w-full h-auto object-contain"
-                    />
-                    {SERVICE_HOTSPOTS.map((h) => (
-                      <Link
-                        key={h.label}
-                        href={h.href}
-                        title={h.label}
-                        aria-label={h.label}
-                        className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 hover:scale-110 hover:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)] focus-visible:scale-110 focus-visible:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)]"
-                        style={{
-                          left: `${h.x}%`,
-                          top: `${h.y}%`,
-                          width: "clamp(44px, 12.5%, 76px)",
-                          aspectRatio: "1 / 1",
-                          ["--glow" as string]: `${h.color}88`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mirror reflection — faded, flipped duplicate resting under the glass */}
-                <div className="relative h-16 sm:h-24 lg:h-32 overflow-hidden opacity-25 pointer-events-none select-none"
-                  style={{
-                    maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55), transparent)",
-                    WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55), transparent)",
-                  }}
-                  aria-hidden="true">
-                  <Image
-                    src="/images/landing-hero-car.png"
-                    alt=""
-                    width={1254}
-                    height={1254}
-                    className="w-full h-auto object-contain scale-y-[-1]"
-                  />
-                </div>
-              </div>
-
-              {/* Service chip grid — mirrors the hotspots above so every
-                  destination stays reachable & discoverable without relying
-                  on hovering/tapping invisible hotspots. Reuses the same
-                  SERVICE_HOTSPOTS data (no duplicated service list). */}
-              <ul className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 max-w-4xl mx-auto" role="list">
-                {SERVICE_HOTSPOTS.map((h) => (
-                  <li key={h.label}>
-                    <Link
-                      href={h.href}
-                      title={h.label}
-                      className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-3 min-h-[44px] text-[13px] sm:text-sm font-bold text-white/80 hover:bg-white/10 hover:text-white active:bg-white/15 transition-colors"
-                    >
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: h.color }} aria-hidden="true" />
-                      {h.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <VehicleServiceShowcase />
             </div>
           </div>
         </section>
