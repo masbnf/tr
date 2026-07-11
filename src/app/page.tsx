@@ -20,14 +20,18 @@ const STATS = [
   { v: "۲۴/۷",    l: "پشتیبانی" },
 ];
 
-/* Trust badges shown alongside the hero CTAs (both mobile & desktop). */
+/* Trust badges shown alongside the desktop hero CTAs. */
 const TRUST = ["بدون ثبت‌نام", "پرداخت در محل", "متخصص تأیید‌شده", "ضمانت کیفیت"];
+
+/* The three trust indicators shown in the mobile hero (distinct, shorter
+   copy tailored for the compact mobile layout). */
+const MOBILE_TRUST = ["اعزام سریع", "متخصص تأییدشده", "پرداخت در محل"];
 
 /* Clickable hotspots overlaid on the services showcase image — positions are
    percentages matched to each badge's center in landing-hero-car.png.
    Hrefs are placeholders until each service gets its own destination.
    This is the single source of truth for the service list: both the image
-   hotspots and the mobile-friendly link list below render from this array. */
+   hotspots and the mobile-friendly chip grid below render from this array. */
 const SERVICE_HOTSPOTS = [
   { label: "تعمیر موتور", href: "/request?service=engine-repair", x: 50.1, y: 16.3, color: "#ef4444" },
   { label: "تایر",        href: "/request?service=tire",          x: 72.4, y: 22.6, color: "#a855f7" },
@@ -73,26 +77,22 @@ export default function LandingPage() {
         <div className="relative z-10 flex-1 flex flex-col">
 
           {/* ── Mobile hero: text-first, no image ── */}
-          <div className="lg:hidden flex flex-col px-6 sm:px-8 pt-28 pb-10 text-right">
+          <div className="lg:hidden flex flex-col px-6 sm:px-8 pt-28 text-right">
 
-            <p className="anim-fadeup text-white/70 text-sm font-bold tracking-[.1em] mb-4">
+            <p className="anim-fadeup text-white/70 text-sm font-bold tracking-[.1em] mb-3">
               خدمات سیار خودرو در شیراز
             </p>
 
-            <h1 className="anim-fadeup delay-1 font-black text-white leading-[1.3] mb-4 text-[28px] sm:text-3xl">
-              خدمات سیار خودرو <span style={{ color: "#ff6b82" }}>در محل شما</span>
+            <h1 className="anim-fadeup delay-1 font-black text-white leading-[1.15] mb-4 text-4xl sm:text-[40px]">
+              خدمات خودرو، <span style={{ color: "#ff6b82" }}>سریع</span> در محل شما
             </h1>
 
-            <p className="anim-fadeup delay-2 text-white/70 leading-relaxed mb-2 max-w-md text-base">
-              مکانیکا راه سریع و مطمئن برای درخواست خدمات سیار خودرو در شیراز است. از مکانیک و باتری تا یدک‌کش و تعویض روغن، فقط در چند لمس درخواستت را ثبت کن تا نزدیک‌ترین متخصص به محل شما اعزام شود.
-            </p>
-
-            <p className="anim-fadeup delay-2 text-white/60 text-sm font-bold mb-6">
-              سریع، ساده و قابل اعتماد
+            <p className="anim-fadeup delay-2 text-white/80 mb-6 max-w-md text-base sm:text-lg" style={{ lineHeight: 1.9 }}>
+              مکانیکا راه سریع و مطمئن برای درخواست خدمات سیار خودرو است؛ از مکانیک و باتری تا یدک‌کش و تعویض روغن، بدون دردسر و در کمترین زمان.
             </p>
 
             {/* CTA buttons */}
-            <div className="anim-fadeup delay-3 flex flex-col gap-3 mb-7">
+            <div className="anim-fadeup delay-3 flex flex-col gap-3 mb-5">
               <Link href="/request"
                 className="flex items-center justify-center gap-2 font-black w-full px-6 py-4 rounded-xl text-base transition-all duration-200 active:scale-[0.98] shadow-[0_8px_32px_rgba(232,0,42,0.4)]"
                 style={{ background: "#e8002a", color: "#fff" }}>
@@ -107,10 +107,10 @@ export default function LandingPage() {
               </a>
             </div>
 
-            {/* Trust indicators — condensed for mobile */}
+            {/* Trust indicators — three compact badges */}
             <div className="anim-fadeup delay-4 flex flex-wrap gap-x-5 gap-y-2">
-              {TRUST.map((f) => (
-                <div key={f} className="flex items-center gap-1.5 text-white/70 text-[13px] font-semibold">
+              {MOBILE_TRUST.map((f) => (
+                <div key={f} className="flex items-center gap-1.5 text-white/75 text-sm font-semibold">
                   <CheckIcon size={14} className="shrink-0 text-[#ff7088]"/>
                   {f}
                 </div>
@@ -202,13 +202,19 @@ export default function LandingPage() {
         </section>
 
         {/* ══ SERVICES ════════════════════════════════════════════════════ */}
-        <section id="services" className="order-1 lg:order-2 scroll-mt-24 py-16 px-6 overflow-hidden" style={{ background: "#0a0d2e" }}>
+        <section id="services" className="order-1 lg:order-2 scroll-mt-24 pt-8 lg:pt-16 pb-16 px-3 sm:px-6" style={{ background: "#0a0d2e" }}>
           <div className="max-w-6xl mx-auto">
-            <span className="section-eyebrow" style={{ color: "#ff7088" }}>خدماتی که ارائه می‌دهیم</span>
-            <h2 className="section-title" style={{ color: "white" }}>چه کمکی می‌تونیم بکنیم؟</h2>
+            {/* Heading is part of the desktop "چه کمکی می‌تونیم بکنیم؟" section
+                intro; the mobile hero already introduces the service, so the
+                heading is hidden on mobile to keep the circular image as the
+                first thing seen after the hero CTAs. */}
+            <div className="hidden lg:block">
+              <span className="section-eyebrow" style={{ color: "#ff7088" }}>خدماتی که ارائه می‌دهیم</span>
+              <h2 className="section-title" style={{ color: "white" }}>چه کمکی می‌تونیم بکنیم؟</h2>
+            </div>
 
             {/* ── Provided services showcase image with clickable hotspots ── */}
-            <div className="mt-8">
+            <div className="lg:mt-8">
               <div className="relative mx-auto max-w-5xl rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.35)] bg-[#070b24]">
                 <Image
                   src="/images/landing-hero-car.png"
@@ -235,17 +241,17 @@ export default function LandingPage() {
                 ))}
               </div>
 
-              {/* Service link list — mirrors the hotspots above so every
+              {/* Service chip grid — mirrors the hotspots above so every
                   destination stays reachable & discoverable without relying
                   on hovering/tapping invisible hotspots. Reuses the same
                   SERVICE_HOTSPOTS data (no duplicated service list). */}
-              <ul className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 max-w-4xl mx-auto" role="list">
+              <ul className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 max-w-4xl mx-auto" role="list">
                 {SERVICE_HOTSPOTS.map((h) => (
                   <li key={h.label}>
                     <Link
                       href={h.href}
                       title={h.label}
-                      className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-3 min-h-[44px] text-[13px] sm:text-sm font-bold text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                      className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-3 min-h-[44px] text-[13px] sm:text-sm font-bold text-white/80 hover:bg-white/10 hover:text-white active:bg-white/15 transition-colors"
                     >
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: h.color }} aria-hidden="true" />
                       {h.label}
@@ -267,12 +273,12 @@ export default function LandingPage() {
               {STEPS.map((step) => {
                 const Icon = step.icon;
                 return (
-                  <div key={step.num} className="bg-white border border-slate-200 rounded-3xl p-7 text-center shadow-sm hover:shadow-[0_8px_28px_rgba(232,0,42,.12)] hover:-translate-y-1 transition-all duration-300">
-                    <span className="text-[12px] font-black text-brand-300 tracking-widest block mb-4">{step.num}</span>
-                    <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-5">
+                  <div key={step.num} className="bg-white border border-slate-200 rounded-3xl p-6 text-center shadow-sm hover:shadow-[0_8px_28px_rgba(232,0,42,.12)] hover:-translate-y-1 transition-all duration-300">
+                    <span className="text-[12px] font-black text-brand-300 tracking-widest block mb-3">{step.num}</span>
+                    <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-4">
                       <Icon size={22} className="text-brand-600"/>
                     </div>
-                    <h3 className="font-black text-slate-900 mb-3 text-xl md:text-2xl leading-snug">{step.title}</h3>
+                    <h3 className="font-black text-slate-900 mb-2 text-xl md:text-2xl leading-snug">{step.title}</h3>
                     <p className="text-base md:text-lg text-slate-500 leading-relaxed">{step.desc}</p>
                   </div>
                 );
