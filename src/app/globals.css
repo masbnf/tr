@@ -26,6 +26,18 @@
   }
 
   ::selection { background: #ff7088; color: #6d0010; }
+
+  /* Visible keyboard focus for links, buttons, hotspot links & form controls */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid #ff7088;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 /* ─── Components ────────────────────────────────────────────────────────── */
@@ -103,3 +115,21 @@
 ::-webkit-scrollbar-track  { background:#f1f5f9; }
 ::-webkit-scrollbar-thumb  { background:#ff7088; border-radius:99px; }
 ::-webkit-scrollbar-thumb:hover { background:#e8002a; }
+
+/* ─── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .anim-fadeup, .anim-fadein, .anim-float, .anim-blink {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

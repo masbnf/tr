@@ -3,18 +3,10 @@ import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
-  WrenchIcon, BatteryIcon, TowTruckIcon, OilDropIcon,
   ZapIcon, ClockIcon, LocationIcon, CheckIcon, PhoneIcon,
 } from "@/components/ui/Icons";
 
 /* ─── Data ──────────────────────────────────────────────────────────────── */
-const SERVICES = [
-  { icon: WrenchIcon,   title: "مکانیک سیار",  desc: "تشخیص و رفع خرابی خودرو در محل بدون نیاز به حمل.", blob: "#fee2e2", bg: "#e8002a", tag: "پرطرفدار" },
-  { icon: BatteryIcon,  title: "تعویض باتری",  desc: "ارائه و نصب باتری مناسب در کوتاه‌ترین زمان ممکن.",  blob: "#e0e7ff", bg: "#6366f1", tag: null },
-  { icon: TowTruckIcon, title: "یدک‌کش",        desc: "انتقال امن خودرو به تعمیرگاه یا مقصد دلخواه.",     blob: "#FEF9C3", bg: "#f59e0b", tag: null },
-  { icon: OilDropIcon,  title: "تعویض روغن",   desc: "روغن‌موتور اورجینال، تعویض در محل بدون اتلاف وقت.", blob: "#DCFCE7", bg: "#10b981", tag: null },
-];
-
 const STEPS = [
   { icon: ZapIcon,      num: "۰۱", title: "درخواست ثبت کن",  desc: "نوع سرویس رو انتخاب و اطلاعات رو وارد کن — فقط ۳۰ ثانیه." },
   { icon: LocationIcon, num: "۰۲", title: "موقعیت بفرست",    desc: "GPS مرورگر لوکیشن دقیقت رو با یک لمس ثبت می‌کنه." },
@@ -28,9 +20,14 @@ const STATS = [
   { v: "۲۴/۷",    l: "پشتیبانی" },
 ];
 
+/* Trust badges shown alongside the hero CTAs (both mobile & desktop). */
+const TRUST = ["بدون ثبت‌نام", "پرداخت در محل", "متخصص تأیید‌شده", "ضمانت کیفیت"];
+
 /* Clickable hotspots overlaid on the services showcase image — positions are
    percentages matched to each badge's center in landing-hero-car.png.
-   Hrefs are placeholders until each service gets its own destination. */
+   Hrefs are placeholders until each service gets its own destination.
+   This is the single source of truth for the service list: both the image
+   hotspots and the mobile-friendly link list below render from this array. */
 const SERVICE_HOTSPOTS = [
   { label: "تعمیر موتور", href: "/request?service=engine-repair", x: 50.1, y: 16.3, color: "#ef4444" },
   { label: "تایر",        href: "/request?service=tire",          x: 72.4, y: 22.6, color: "#a855f7" },
@@ -68,95 +65,149 @@ export default function LandingPage() {
     <>
       {/* ══════════════════════════════════════════════════════════════════
           HERO  —  Navy + Red geometric grid
+          Mobile: text-first (no image), Desktop: original two-column layout.
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen overflow-hidden flex flex-col" style={{ background: "#0d1035" }}>
+      <section className="relative overflow-hidden flex flex-col lg:min-h-screen" style={{ background: "#0d1035" }}>
         <Navbar />
 
-        <div className="relative z-10 flex-1 flex flex-col lg:flex-row">
+        <div className="relative z-10 flex-1 flex flex-col">
 
-          {/* ── LEFT panel: text content ── */}
-          <div className="flex flex-col justify-center px-8 lg:px-16 py-24 lg:py-0 w-full lg:w-[46%] text-right order-2 lg:order-1">
+          {/* ── Mobile hero: text-first, no image ── */}
+          <div className="lg:hidden flex flex-col px-6 sm:px-8 pt-28 pb-10 text-right">
 
-            <p className="anim-fadeup text-white/50 text-[17px] font-bold tracking-[.16em] uppercase mb-6">
-              خدمات سیار خودرو · شیراز
+            <p className="anim-fadeup text-white/70 text-sm font-bold tracking-[.1em] mb-4">
+              خدمات سیار خودرو در شیراز
             </p>
 
-            <h1 className="anim-fadeup delay-1 font-black text-white leading-[1.1] mb-6"
-              style={{ fontSize: "clamp(2.2rem, 5vw, 3.6rem)" }}>
-              خدمات سیار<br/>
-              <span style={{ color: "#e8002a" }}>خودرو</span><br/>
-              در محل شما
+            <h1 className="anim-fadeup delay-1 font-black text-white leading-[1.3] mb-4 text-[28px] sm:text-3xl">
+              خدمات سیار خودرو <span style={{ color: "#ff6b82" }}>در محل شما</span>
             </h1>
 
-            <p className="anim-fadeup delay-2 text-white/60 leading-loose mb-8 max-w-lg text-right text-[22px]">
-              مکانیک، باتری، یدک‌کش و تعویض روغن — سریع، مطمئن،
-              در کمتر از ۳۰ دقیقه در شیراز.
+            <p className="anim-fadeup delay-2 text-white/70 leading-relaxed mb-2 max-w-md text-base">
+              مکانیکا راه سریع و مطمئن برای درخواست خدمات سیار خودرو در شیراز است. از مکانیک و باتری تا یدک‌کش و تعویض روغن، فقط در چند لمس درخواستت را ثبت کن تا نزدیک‌ترین متخصص به محل شما اعزام شود.
+            </p>
+
+            <p className="anim-fadeup delay-2 text-white/60 text-sm font-bold mb-6">
+              سریع، ساده و قابل اعتماد
             </p>
 
             {/* CTA buttons */}
-            <div className="anim-fadeup delay-3 flex flex-col sm:flex-row gap-3 w-full sm:w-auto mb-10">
+            <div className="anim-fadeup delay-3 flex flex-col gap-3 mb-7">
               <Link href="/request"
-                className="flex items-center justify-center gap-2 font-black px-8 py-4 rounded-xl text-[17px] transition-all duration-200 hover:-translate-y-0.5 shadow-[0_8px_32px_rgba(232,0,42,0.4)]"
+                className="flex items-center justify-center gap-2 font-black w-full px-6 py-4 rounded-xl text-base transition-all duration-200 active:scale-[0.98] shadow-[0_8px_32px_rgba(232,0,42,0.4)]"
                 style={{ background: "#e8002a", color: "#fff" }}>
-                <ZapIcon size={17}/>
+                <ZapIcon size={18}/>
                 درخواست سرویس
               </Link>
               <a href="tel:+98"
-                className="flex items-center justify-center gap-2 border-2 text-white font-bold px-6 py-4 rounded-xl text-[17px] hover:bg-white/10 transition-colors"
-                style={{ borderColor: "rgba(255,255,255,0.25)" }}>
-                <PhoneIcon size={17}/>
+                className="flex items-center justify-center gap-2 border-2 text-white font-bold w-full px-6 py-4 rounded-xl text-base hover:bg-white/10 active:scale-[0.98] transition-colors"
+                style={{ borderColor: "rgba(255,255,255,0.35)" }}>
+                <PhoneIcon size={18}/>
                 تماس مستقیم
               </a>
             </div>
 
-            {/* Trust badges */}
-            <div className="anim-fadeup delay-4 grid grid-cols-2 gap-x-8 gap-y-3">
-              {["بدون ثبت‌نام", "پرداخت در محل", "متخصص تأیید‌شده", "ضمانت کیفیت"].map((f) => (
-                <div key={f} className="flex items-center gap-2 text-white/55 text-[17px]">
-                  <CheckIcon size={16} className="shrink-0 text-[#e8002a]"/>
+            {/* Trust indicators — condensed for mobile */}
+            <div className="anim-fadeup delay-4 flex flex-wrap gap-x-5 gap-y-2">
+              {TRUST.map((f) => (
+                <div key={f} className="flex items-center gap-1.5 text-white/70 text-[13px] font-semibold">
+                  <CheckIcon size={14} className="shrink-0 text-[#ff7088]"/>
                   {f}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ── RIGHT panel: brand logo artwork ── */}
-          <div className="w-full lg:w-[54%] order-1 lg:order-2 flex items-center justify-center min-h-[380px] lg:min-h-0 anim-fadein relative overflow-hidden px-4 sm:px-8 py-8 lg:py-12">
-            <div className="relative w-full max-w-[760px] rounded-[2rem] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.35)] border border-white/10">
-              <Image
-                src="/images/landing-services-showcase.png"
-                alt="مکانیکا — خدمات هوشمند خودرو"
-                width={1212}
-                height={1298}
-                priority
-                className="w-full h-auto object-contain"
-              />
+          {/* ── Desktop hero: original two-column layout (unchanged) ── */}
+          <div className="hidden lg:flex flex-1 lg:flex-row">
+
+            {/* LEFT panel: text content */}
+            <div className="flex flex-col justify-center px-8 lg:px-16 py-24 lg:py-0 w-full lg:w-[46%] text-right order-2 lg:order-1">
+
+              <p className="anim-fadeup text-white/60 text-[17px] font-bold tracking-[.16em] uppercase mb-6">
+                خدمات سیار خودرو · شیراز
+              </p>
+
+              <h1 className="anim-fadeup delay-1 font-black text-white leading-[1.1] mb-6"
+                style={{ fontSize: "clamp(2.2rem, 5vw, 3.6rem)" }}>
+                خدمات سیار<br/>
+                <span style={{ color: "#e8002a" }}>خودرو</span><br/>
+                در محل شما
+              </h1>
+
+              <p className="anim-fadeup delay-2 text-white/70 leading-loose mb-8 max-w-lg text-right text-[22px]">
+                مکانیک، باتری، یدک‌کش و تعویض روغن — سریع، مطمئن،
+                در کمتر از ۳۰ دقیقه در شیراز.
+              </p>
+
+              {/* CTA buttons */}
+              <div className="anim-fadeup delay-3 flex flex-col sm:flex-row gap-3 w-full sm:w-auto mb-10">
+                <Link href="/request"
+                  className="flex items-center justify-center gap-2 font-black px-8 py-4 rounded-xl text-[17px] transition-all duration-200 hover:-translate-y-0.5 shadow-[0_8px_32px_rgba(232,0,42,0.4)]"
+                  style={{ background: "#e8002a", color: "#fff" }}>
+                  <ZapIcon size={17}/>
+                  درخواست سرویس
+                </Link>
+                <a href="tel:+98"
+                  className="flex items-center justify-center gap-2 border-2 text-white font-bold px-6 py-4 rounded-xl text-[17px] hover:bg-white/10 transition-colors"
+                  style={{ borderColor: "rgba(255,255,255,0.25)" }}>
+                  <PhoneIcon size={17}/>
+                  تماس مستقیم
+                </a>
+              </div>
+
+              {/* Trust badges */}
+              <div className="anim-fadeup delay-4 grid grid-cols-2 gap-x-8 gap-y-3">
+                {TRUST.map((f) => (
+                  <div key={f} className="flex items-center gap-2 text-white/65 text-[17px]">
+                    <CheckIcon size={16} className="shrink-0 text-[#e8002a]"/>
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* RIGHT panel: brand logo artwork */}
+            <div className="w-full lg:w-[54%] order-1 lg:order-2 flex items-center justify-center min-h-[380px] lg:min-h-0 anim-fadein relative overflow-hidden px-4 sm:px-8 py-8 lg:py-12">
+              <div className="relative w-full max-w-[760px] rounded-[2rem] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.35)] border border-white/10">
+                <Image
+                  src="/images/landing-services-showcase.png"
+                  alt="مکانیکا — خدمات هوشمند خودرو"
+                  width={1212}
+                  height={1298}
+                  priority
+                  className="w-full h-auto object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <main>
+      {/* Sections below are reordered on mobile (services first) via flex
+          `order` utilities — no markup or assets are duplicated. Desktop
+          keeps the original stats → services → how → cta order. */}
+      <main className="flex flex-col">
 
         {/* ══ STATS BAR ════════════════════════════════════════════════════ */}
-        <section style={{ background: "#080d38" }}>
+        <section className="order-2 lg:order-1" style={{ background: "#080d38" }}>
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {STATS.map((s, i) => (
               <div key={s.l} className={`text-center py-7 px-4 ${i % 2 === 0 && i < 2 ? "border-b md:border-b-0 border-white/10" : ""} ${i < 3 ? "md:border-l border-white/10" : ""}`}>
                 <p className="font-black text-white mb-1" style={{ fontSize: "clamp(1.5rem,3vw,1.9rem)" }}>{s.v}</p>
-                <p className="text-[17px] text-white/35">{s.l}</p>
+                <p className="text-sm sm:text-[15px] text-white/65">{s.l}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ══ SERVICES ════════════════════════════════════════════════════ */}
-        <section id="services" className="py-16 px-6 overflow-hidden" style={{ background: "#0a0d2e" }}>
+        <section id="services" className="order-1 lg:order-2 scroll-mt-24 py-16 px-6 overflow-hidden" style={{ background: "#0a0d2e" }}>
           <div className="max-w-6xl mx-auto">
             <span className="section-eyebrow" style={{ color: "#ff7088" }}>خدماتی که ارائه می‌دهیم</span>
             <h2 className="section-title" style={{ color: "white" }}>چه کمکی می‌تونیم بکنیم؟</h2>
 
-            {/* ── Provided services showcase image ── */}
+            {/* ── Provided services showcase image with clickable hotspots ── */}
             <div className="mt-8">
               <div className="relative mx-auto max-w-5xl rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.35)] bg-[#070b24]">
                 <Image
@@ -172,17 +223,42 @@ export default function LandingPage() {
                     href={h.href}
                     title={h.label}
                     aria-label={h.label}
-                    className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 hover:scale-110 hover:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)]"
-                    style={{ left: `${h.x}%`, top: `${h.y}%`, width: "12.5%", aspectRatio: "1 / 1", ["--glow" as string]: `${h.color}88` }}
+                    className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 hover:scale-110 hover:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)] focus-visible:scale-110 focus-visible:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)]"
+                    style={{
+                      left: `${h.x}%`,
+                      top: `${h.y}%`,
+                      width: "clamp(44px, 12.5%, 76px)",
+                      aspectRatio: "1 / 1",
+                      ["--glow" as string]: `${h.color}88`,
+                    }}
                   />
                 ))}
               </div>
+
+              {/* Service link list — mirrors the hotspots above so every
+                  destination stays reachable & discoverable without relying
+                  on hovering/tapping invisible hotspots. Reuses the same
+                  SERVICE_HOTSPOTS data (no duplicated service list). */}
+              <ul className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 max-w-4xl mx-auto" role="list">
+                {SERVICE_HOTSPOTS.map((h) => (
+                  <li key={h.label}>
+                    <Link
+                      href={h.href}
+                      title={h.label}
+                      className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-3 min-h-[44px] text-[13px] sm:text-sm font-bold text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                    >
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: h.color }} aria-hidden="true" />
+                      {h.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
 
         {/* ══ HOW IT WORKS ════════════════════════════════════════════════ */}
-        <section id="how" className="py-24 px-6 bg-slate-50 border-y border-slate-200">
+        <section id="how" className="order-3 scroll-mt-24 py-24 px-6 bg-slate-50 border-y border-slate-200">
           <div className="max-w-6xl mx-auto">
             <span className="section-eyebrow">روش کار ما</span>
             <h2 className="section-title">در سه قدم ساده</h2>
@@ -196,8 +272,8 @@ export default function LandingPage() {
                     <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-5">
                       <Icon size={22} className="text-brand-600"/>
                     </div>
-                    <h3 className="font-black text-slate-900 mb-3 text-[34px] leading-snug">{step.title}</h3>
-                    <p className="text-2xl text-slate-400 leading-relaxed">{step.desc}</p>
+                    <h3 className="font-black text-slate-900 mb-3 text-xl md:text-2xl leading-snug">{step.title}</h3>
+                    <p className="text-base md:text-lg text-slate-500 leading-relaxed">{step.desc}</p>
                   </div>
                 );
               })}
@@ -212,7 +288,7 @@ export default function LandingPage() {
         </section>
 
         {/* ══ CTA BAND ════════════════════════════════════════════════════ */}
-        <section className="relative py-20 px-6 overflow-hidden" style={{ background: "#0d1035" }}>
+        <section className="order-4 relative py-20 px-6 overflow-hidden" style={{ background: "#0d1035" }}>
           {/* Geometric accent shapes */}
           <div className="absolute inset-0 pointer-events-none select-none" aria-hidden>
             <div className="absolute rounded-full"
@@ -225,7 +301,7 @@ export default function LandingPage() {
             <h2 className="font-black text-white mb-4" style={{ fontSize: "clamp(1.75rem,4vw,2.75rem)" }}>
               آماده کمک هستیم
             </h2>
-            <p className="mb-10 leading-relaxed" style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", color: "rgba(255,255,255,0.6)" }}>
+            <p className="mb-10 leading-relaxed" style={{ fontSize: "clamp(1.125rem,2.5vw,1.375rem)", color: "rgba(255,255,255,0.72)" }}>
               ۲۴ ساعته در شیراز · پاسخ در کمتر از ۳۰ دقیقه · بدون معطلی
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
