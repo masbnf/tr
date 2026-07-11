@@ -3,14 +3,14 @@ import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
-  ZapIcon, ClockIcon, LocationIcon, CheckIcon, PhoneIcon,
+  ZapIcon, WrenchIcon, LocationIcon, CheckIcon, PhoneIcon,
 } from "@/components/ui/Icons";
 
 /* ─── Data ──────────────────────────────────────────────────────────────── */
 const STEPS = [
-  { icon: ZapIcon,      num: "۰۱", title: "درخواست ثبت کن",  desc: "نوع سرویس رو انتخاب و اطلاعات رو وارد کن — فقط ۳۰ ثانیه." },
-  { icon: LocationIcon, num: "۰۲", title: "موقعیت بفرست",    desc: "GPS مرورگر لوکیشن دقیقت رو با یک لمس ثبت می‌کنه." },
-  { icon: ClockIcon,    num: "۰۳", title: "متخصص می‌آید",    desc: "نزدیک‌ترین نیرو ظرف کمتر از ۳۰ دقیقه پیشت هست." },
+  { icon: WrenchIcon,   num: "۰۱", title: "سرویس را انتخاب کن",   desc: "نوع خدمات موردنیازت را انتخاب کن و اطلاعات خودرو را وارد کن." },
+  { icon: LocationIcon, num: "۰۲", title: "موقعیتت را ثبت کن",   desc: "آدرس یا موقعیت دقیق خودت را برای اعزام متخصص مشخص کن." },
+  { icon: CheckIcon,    num: "۰۳", title: "متخصص به محل می‌رسد", desc: "نزدیک‌ترین متخصص درخواست را دریافت می‌کند و به محل شما می‌آید." },
 ];
 
 const STATS = [
@@ -213,32 +213,67 @@ export default function LandingPage() {
               <h2 className="section-title" style={{ color: "white" }}>چه کمکی می‌تونیم بکنیم؟</h2>
             </div>
 
-            {/* ── Provided services showcase image with clickable hotspots ── */}
+            {/* ── Provided services showcase image with clickable hotspots ──
+                Frosted-glass frame (translucent + backdrop-blur + edge sheen)
+                with a faded mirror-reflection strip beneath, so the tile
+                reads as glass resting on a glossy floor rather than a flat
+                opaque panel. */}
             <div className="lg:mt-8">
-              <div className="relative mx-auto max-w-5xl rounded-[2rem] overflow-hidden border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.35)] bg-[#070b24]">
-                <Image
-                  src="/images/landing-hero-car.png"
-                  alt="نمایش خدمات خودرو مکانیکا"
-                  width={1254}
-                  height={1254}
-                  className="w-full h-auto object-contain"
-                />
-                {SERVICE_HOTSPOTS.map((h) => (
-                  <Link
-                    key={h.label}
-                    href={h.href}
-                    title={h.label}
-                    aria-label={h.label}
-                    className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 hover:scale-110 hover:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)] focus-visible:scale-110 focus-visible:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)]"
-                    style={{
-                      left: `${h.x}%`,
-                      top: `${h.y}%`,
-                      width: "clamp(44px, 12.5%, 76px)",
-                      aspectRatio: "1 / 1",
-                      ["--glow" as string]: `${h.color}88`,
-                    }}
+              <div className="relative mx-auto max-w-5xl">
+                {/* Ambient floor glow under the glass */}
+                <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-2/3 h-10 rounded-full blur-2xl opacity-40 pointer-events-none"
+                  style={{ background: "radial-gradient(ellipse, rgba(232,0,42,0.35), transparent 70%)" }}
+                  aria-hidden="true" />
+
+                {/* Glass frame */}
+                <div className="relative rounded-[2rem] p-2 sm:p-2.5 backdrop-blur-xl bg-white/[0.06] border border-white/15 shadow-[0_24px_80px_rgba(0,0,0,0.35)] overflow-hidden">
+                  <div className="absolute top-0 inset-x-8 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" aria-hidden="true" />
+                  <div className="absolute inset-0 pointer-events-none"
+                    style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 42%)" }}
+                    aria-hidden="true" />
+
+                  <div className="relative rounded-[1.6rem] overflow-hidden bg-[#070b24]">
+                    <Image
+                      src="/images/landing-hero-car.png"
+                      alt="نمایش خدمات خودرو مکانیکا"
+                      width={1254}
+                      height={1254}
+                      className="w-full h-auto object-contain"
+                    />
+                    {SERVICE_HOTSPOTS.map((h) => (
+                      <Link
+                        key={h.label}
+                        href={h.href}
+                        title={h.label}
+                        aria-label={h.label}
+                        className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 hover:scale-110 hover:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)] focus-visible:scale-110 focus-visible:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)]"
+                        style={{
+                          left: `${h.x}%`,
+                          top: `${h.y}%`,
+                          width: "clamp(44px, 12.5%, 76px)",
+                          aspectRatio: "1 / 1",
+                          ["--glow" as string]: `${h.color}88`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mirror reflection — faded, flipped duplicate resting under the glass */}
+                <div className="relative h-16 sm:h-24 lg:h-32 overflow-hidden opacity-25 pointer-events-none select-none"
+                  style={{
+                    maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55), transparent)",
+                    WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55), transparent)",
+                  }}
+                  aria-hidden="true">
+                  <Image
+                    src="/images/landing-hero-car.png"
+                    alt=""
+                    width={1254}
+                    height={1254}
+                    className="w-full h-auto object-contain scale-y-[-1]"
                   />
-                ))}
+                </div>
               </div>
 
               {/* Service chip grid — mirrors the hotspots above so every
@@ -263,31 +298,89 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ══ HOW IT WORKS ════════════════════════════════════════════════ */}
-        <section id="how" className="order-3 scroll-mt-24 py-24 px-6 bg-slate-50 border-y border-slate-200">
+        {/* ══ HOW IT WORKS ════════════════════════════════════════════════
+            Dark navy continuation of the hero/services brand — connected
+            process timeline (horizontal on desktop, vertical on mobile),
+            both rendered from the shared STEPS data source above.
+        ══════════════════════════════════════════════════════════════════ */}
+        <section id="how" className="order-3 scroll-mt-24 py-16 sm:py-20 lg:py-28 px-6 border-t border-white/5" style={{ background: "#080d38" }}>
           <div className="max-w-6xl mx-auto">
-            <span className="section-eyebrow">روش کار ما</span>
-            <h2 className="section-title">در سه قدم ساده</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {/* Header */}
+            <div className="text-center mb-12 lg:mb-16">
+              <span className="text-[13px] sm:text-sm lg:text-[15px] font-bold tracking-widest uppercase mb-3 block" style={{ color: "#ff7088" }}>
+                مراحل درخواست سرویس
+              </span>
+              <h2 className="font-black text-white mb-4" style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)" }}>
+                فقط سه قدم تا رسیدن متخصص
+              </h2>
+              <p className="max-w-xl mx-auto text-white/65 leading-relaxed text-[15px] sm:text-base lg:text-lg">
+                درخواستت را ثبت کن، موقعیتت را بفرست و منتظر رسیدن نزدیک‌ترین متخصص باش.
+              </p>
+            </div>
+
+            {/* ── Desktop: connected horizontal timeline ── */}
+            <ol className="hidden lg:grid grid-cols-3 gap-6 relative mb-14">
+              <li
+                className="absolute top-8 h-px pointer-events-none"
+                style={{
+                  left: "16.6667%",
+                  right: "16.6667%",
+                  background: "linear-gradient(90deg, rgba(232,0,42,0) 0%, rgba(232,0,42,0.35) 15%, rgba(232,0,42,0.35) 85%, rgba(232,0,42,0) 100%)",
+                }}
+                aria-hidden="true"
+              />
               {STEPS.map((step) => {
                 const Icon = step.icon;
                 return (
-                  <div key={step.num} className="bg-white border border-slate-200 rounded-3xl p-6 text-center shadow-sm hover:shadow-[0_8px_28px_rgba(232,0,42,.12)] hover:-translate-y-1 transition-all duration-300">
-                    <span className="text-[12px] font-black text-brand-300 tracking-widest block mb-3">{step.num}</span>
-                    <div className="w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center mx-auto mb-4">
-                      <Icon size={22} className="text-brand-600"/>
+                  <li key={step.num}
+                    className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-7 text-center transition-colors duration-300 hover:border-brand-500/30 hover:shadow-[0_8px_28px_rgba(232,0,42,0.12)]"
+                  >
+                    <div className="relative mx-auto mb-5 w-16 h-16 rounded-2xl border border-brand-500/40 flex items-center justify-center shadow-[0_0_20px_rgba(232,0,42,0.15)]" style={{ background: "#0a0d2e" }}>
+                      <Icon size={26} className="text-brand-300"/>
+                      <span className="absolute -top-2.5 -right-2.5 flex items-center justify-center w-7 h-7 rounded-full bg-brand-500 text-white text-[11px] font-black">
+                        {step.num}
+                      </span>
                     </div>
-                    <h3 className="font-black text-slate-900 mb-2 text-xl md:text-2xl leading-snug">{step.title}</h3>
-                    <p className="text-base md:text-lg text-slate-500 leading-relaxed">{step.desc}</p>
-                  </div>
+                    <h3 className="font-black text-white mb-2 text-[20px] xl:text-[22px] leading-snug">{step.title}</h3>
+                    <p className="text-[15px] xl:text-base text-white/65 leading-relaxed">{step.desc}</p>
+                  </li>
                 );
               })}
-            </div>
+            </ol>
 
-            <div className="text-center mt-12">
-              <Link href="/request" className="btn-primary text-[17px] py-4 px-10 rounded-2xl">
-                <ZapIcon size={17}/> همین الان شروع کن
+            {/* ── Mobile/tablet: connected vertical timeline ── */}
+            <ol className="lg:hidden flex flex-col mb-10">
+              {STEPS.map((step, i) => {
+                const Icon = step.icon;
+                const isLast = i === STEPS.length - 1;
+                return (
+                  <li key={step.num} className="relative flex gap-4 pb-8 last:pb-0 text-right">
+                    {!isLast && (
+                      <span
+                        className="absolute top-14 bottom-0 w-px"
+                        style={{ right: "27px", background: "linear-gradient(180deg, rgba(232,0,42,0.35), rgba(232,0,42,0.05))" }}
+                        aria-hidden="true"
+                      />
+                    )}
+                    <div className="relative shrink-0 w-14 h-14 rounded-2xl border border-brand-500/40 flex items-center justify-center" style={{ background: "#0a0d2e" }}>
+                      <Icon size={22} className="text-brand-300"/>
+                      <span className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 rounded-full bg-brand-500 text-white text-[10px] font-black">
+                        {step.num}
+                      </span>
+                    </div>
+                    <div className="flex-1 pt-1">
+                      <h3 className="font-black text-white mb-1.5 text-[18px] sm:text-xl leading-snug">{step.title}</h3>
+                      <p className="text-sm sm:text-[15px] text-white/65 leading-relaxed">{step.desc}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+
+            <div className="text-center">
+              <Link href="/request" className="btn-primary text-base sm:text-[17px] py-3.5 sm:py-4 px-8 sm:px-10 rounded-2xl w-full sm:w-auto">
+                <ZapIcon size={17}/> همین حالا درخواست بده
               </Link>
             </div>
           </div>

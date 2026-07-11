@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Vazirmatn", "system-ui", "sans-serif"],
+        sans: ["var(--font-vazirmatn)", "Tahoma", "Arial", "sans-serif"],
       },
       colors: {
         brand: {
