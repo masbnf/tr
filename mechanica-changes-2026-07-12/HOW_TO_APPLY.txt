@@ -1,0 +1,41 @@
+این زیپ شامل تمام فایل‌های جدید/تغییرکرده‌ی امروز است (۳۱ فایل)،
+دقیقاً با همان مسیر نسبی که در ریپو دارند.
+
+نحوه‌ی اعمال:
+
+1. محتوای این زیپ را استخراج کن و مستقیم روی پوشه‌ی ریپوی محلی‌ات
+   (همان جایی که package.json وجود دارد) کپی/جایگزین کن.
+   یعنی پوشه‌ی docs/ و src/ داخل زیپ باید با docs/ و src/ داخل
+   ریپوی تو ادغام شوند (فایل‌های هم‌نام جایگزین، بقیه اضافه می‌شوند).
+
+2. چون package.json تغییر کرده (آپدیت next):
+   npm install
+
+3. تست محلی قبل از commit:
+   npm run typecheck
+   npm run lint
+   npm run build
+
+4. اگر همه چیز پاک بود:
+   git add -A
+   git commit -m "docs + security patch + request form + admin panel"
+   git push
+
+فایل‌های تغییریافته/جدید:
+- .env.example                              (اصلاح‌شده: راهنمای escape کردن $)
+- docs/*.md                                  (۱۶ فایل، همه جدید)
+- package.json, package-lock.json           (next -> 14.2.35)
+- src/app/layout.tsx                         (افزودن Toaster)
+- src/app/request/page.tsx                   (اتصال به RequestForm)
+- src/components/forms/RequestForm.tsx       (جدید)
+- src/app/admin/layout.tsx                   (افزودن دکمه‌ی خروج)
+- src/app/admin/login/page.tsx               (فرم واقعی)
+- src/app/admin/page.tsx                     (اتصال به OrdersTable)
+- src/components/admin/OrdersTable.tsx       (جدید)
+- src/components/admin/LogoutButton.tsx      (جدید)
+- src/app/api/admin/auth/route.ts            (افزودن DELETE برای logout)
+- src/app/api/requests/route.ts              (افزودن auth guard روی GET)
+- src/app/api/requests/[id]/route.ts         (افزودن auth guard)
+- src/lib/auth.ts                            (افزودن verifyAdminRequest)
+
+جزئیات کامل هر تغییر در docs/CHANGELOG.md است.
