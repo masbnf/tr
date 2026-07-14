@@ -1,17 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ComponentType } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   CarIcon, MotorcycleIcon, BicycleIcon, StoreIcon, CheckIcon, type IconProps,
 } from "@/components/ui/Icons";
+import { DEFAULT_SITE_SETTINGS, SiteSettings, loadSiteSettings } from "@/lib/siteSettings";
 
 /* ─── Types ─────────────────────────────────────────────────────────────── */
 type VehicleType = "car" | "motorcycle" | "bicycle";
 
 type VehicleService = {
+  id?: string;
   label: string;
   href: string;
   color: string;
@@ -97,11 +99,68 @@ const VEHICLES: VehicleConfig[] = [
   },
 ];
 
+const CAR_ORBIT_POSITIONS = [
+  { x: 50.0, y: 9.5 },
+  { x: 71.5, y: 15.0 },
+  { x: 86.0, y: 31.5 },
+  { x: 87.5, y: 58.5 },
+  { x: 72.0, y: 78.5 },
+  { x: 50.0, y: 91.0 },
+  { x: 28.0, y: 78.5 },
+  { x: 12.0, y: 58.5 },
+  { x: 13.5, y: 31.5 },
+  { x: 28.5, y: 15.0 },
+];
+
+function getCarOrbitPosition(index: number, total: number) {
+  if (total <= CAR_ORBIT_POSITIONS.length) return CAR_ORBIT_POSITIONS[index];
+
+  const angle = (-90 + (index * 360) / total) * (Math.PI / 180);
+  const radius = 35.8;
+  return {
+    x: 50 + Math.cos(angle) * radius,
+    y: 50 + Math.sin(angle) * radius,
+  };
+}
+
 /* ─── Component ─────────────────────────────────────────────────────────── */
 export default function VehicleServiceShowcase() {
   const [activeVehicleId, setActiveVehicleId] = useState<VehicleType>("car");
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
   const activeVehicle = VEHICLES.find((v) => v.id === activeVehicleId) ?? VEHICLES[0];
+  const activeServices = settings.serviceTags
+    .filter((tag) => tag.vehicle === activeVehicle.id && tag.enabled)
+    .map((tag, index, tags) => {
+      const position = activeVehicle.id === "car"
+        ? getCarOrbitPosition(index, tags.length)
+        : { x: tag.x, y: tag.y };
+
+      return {
+        id: tag.id,
+        label: tag.label,
+        href: tag.href,
+        color: tag.color,
+        x: position.x,
+        y: position.y,
+      };
+    });
   const ActiveIcon = activeVehicle.icon;
+
+  useEffect(() => {
+    const load = () => setSettings(loadSiteSettings());
+    const handleSettings = (event: Event) => {
+      const customEvent = event as CustomEvent<SiteSettings>;
+      setSettings(customEvent.detail ?? loadSiteSettings());
+    };
+
+    load();
+    window.addEventListener("mechanica:site-settings", handleSettings);
+    window.addEventListener("storage", load);
+    return () => {
+      window.removeEventListener("mechanica:site-settings", handleSettings);
+      window.removeEventListener("storage", load);
+    };
+  }, []);
 
   return (
     <div>
@@ -177,19 +236,19 @@ export default function VehicleServiceShowcase() {
                   priority={activeVehicleId === "car"}
                   className="w-full h-full object-contain"
                 />
-                {activeVehicle.services.map((s) => (
+                {activeServices.map((s) => (
                   s.x === undefined || s.y === undefined ? null : (
                     <Link
-                      key={s.label}
+                      key={s.id ?? s.label}
                       href={s.href}
                       title={s.label}
                       aria-label={s.label}
-                      className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 hover:scale-110 hover:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)] focus-visible:scale-110 focus-visible:shadow-[0_0_0_4px_var(--glow),0_0_30px_10px_var(--glow)]"
+                      className="absolute rounded-[24px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 hover:scale-105 focus-visible:scale-105 focus-visible:bg-white/10"
                       style={{
                         left: `${s.x}%`,
                         top: `${s.y}%`,
-                        width: "clamp(44px, 12.5%, 76px)",
-                        aspectRatio: "1 / 1",
+                        width: "clamp(86px, 15%, 160px)",
+                        height: "clamp(84px, 14%, 150px)",
                         ["--glow" as string]: `${s.color}88`,
                       }}
                     />
@@ -230,8 +289,8 @@ export default function VehicleServiceShowcase() {
 
       {/* ── Service chip grid — reads from the same activeVehicle.services ── */}
       <ul key={`${activeVehicle.id}-chips`} className="anim-vehicle-fade mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 max-w-4xl mx-auto" role="list">
-        {activeVehicle.services.map((s) => (
-          <li key={s.label}>
+        {activeServices.map((s) => (
+          <li key={s.id ?? s.label}>
             <Link
               href={s.href}
               title={s.label}

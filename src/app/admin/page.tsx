@@ -1,10 +1,10 @@
-import OrdersTable from "@/components/admin/OrdersTable";
+import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminShell from "@/components/admin/AdminShell";
 
-export default function AdminDashboard() {
+export default function AdminPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">سفارش‌ها</h1>
-      <OrdersTable />
-    </div>
+    <AdminShell>
+      <AdminDashboard view="dashboard" />
+    </AdminShell>
   );
 }

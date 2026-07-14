@@ -22,9 +22,9 @@ export default function LogoutButton() {
       type="button"
       onClick={onLogout}
       disabled={loading}
-      className="mt-auto text-sm text-slate-500 hover:text-red-600 transition-colors disabled:opacity-50 text-right"
+      className="mt-5 rounded-2xl border border-white/10 px-4 py-3 text-right text-sm font-bold text-white/70 transition hover:border-brand-300/50 hover:bg-brand-500/20 hover:text-white disabled:opacity-50 lg:mt-auto"
     >
-      {loading ? "در حال خروج..." : "🚪 خروج"}
+      {loading ? "در حال خروج..." : "خروج"}
     </button>
   );
 }

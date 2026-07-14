@@ -1,3 +1,10 @@
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
-  return <div><h1 className="text-xl font-bold">سفارش #{params.id}</h1></div>;
+import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminShell from "@/components/admin/AdminShell";
+
+export default function AdminOrderDetailPage() {
+  return (
+    <AdminShell>
+      <AdminDashboard view="orders" />
+    </AdminShell>
+  );
 }
