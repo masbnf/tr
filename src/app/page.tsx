@@ -54,13 +54,22 @@ export default function LandingPage() {
           HERO  —  Navy + Red geometric grid
           Mobile: text-first (no image), Desktop: original two-column layout.
       ══════════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden flex flex-col lg:min-h-screen" style={{ background: "#0d1035" }}>
+      <section
+        className="relative flex min-h-screen flex-col overflow-hidden bg-[#080d1f]"
+        style={{
+          backgroundImage: "url('/images/garage-hero-bg.jpg')",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/5" />
         <Navbar />
 
         <div className="relative z-10 flex-1 flex flex-col">
 
           {/* ── Mobile hero: text-first, no image ── */}
-          <div className="lg:hidden flex flex-col px-6 sm:px-8 pt-28 text-right">
+          <div className="flex flex-1 flex-col justify-center px-6 pb-14 pt-28 text-right sm:px-8 lg:hidden">
+            <div className="rounded-[1.75rem] bg-[#080d1f]/48 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-[2px]">
 
             <p className="anim-fadeup text-white/70 text-sm font-bold tracking-[.1em] mb-3">
               خدمات سیار خودرو در شیراز
@@ -99,13 +108,15 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+            </div>
           </div>
 
           {/* ── Desktop hero: original two-column layout (unchanged) ── */}
-          <div className="hidden lg:flex flex-1 lg:flex-row">
+          <div className="hidden flex-1 lg:flex">
 
             {/* LEFT panel: text content */}
-            <div className="flex flex-col justify-center px-8 lg:px-16 py-24 lg:py-0 w-full lg:w-[46%] text-right order-2 lg:order-1">
+            <div className="ml-auto flex w-full max-w-[760px] flex-col justify-center px-8 py-24 text-right lg:px-16 lg:py-0">
+              <div className="rounded-[2rem] bg-[#080d1f]/46 p-8 shadow-[0_30px_90px_rgba(0,0,0,0.28)] backdrop-blur-[2px]">
 
               <p className="anim-fadeup text-white/60 text-[17px] font-bold tracking-[.16em] uppercase mb-6">
                 خدمات سیار خودرو · شیراز
@@ -148,10 +159,11 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
+              </div>
             </div>
 
             {/* RIGHT panel: brand logo artwork */}
-            <div className="w-full lg:w-[54%] order-1 lg:order-2 flex items-center justify-center min-h-[380px] lg:min-h-0 anim-fadein relative overflow-hidden px-4 sm:px-8 py-8 lg:py-12">
+            {false ? (
               <div className="relative w-full max-w-[760px] rounded-[2rem] overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.35)] border border-white/10">
                 <Image
                   src="/images/landing-services-showcase.png"
@@ -162,7 +174,7 @@ export default function LandingPage() {
                   className="w-full h-auto object-contain"
                 />
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </section>
