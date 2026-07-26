@@ -62,16 +62,16 @@ export default function LandingPage() {
           backgroundSize: "cover",
         }}
       >
-        <div className="absolute inset-0 bg-black/5" />
+        <div className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,transparent_0%,transparent_25%,rgba(8,13,31,0.28)_50%,rgba(8,13,31,0.58)_75%,rgba(8,13,31,0.9)_100%)] lg:block" />
         <Navbar />
 
         <div className="relative z-10 flex-1 flex flex-col">
 
           {/* ── Mobile hero: text-first, no image ── */}
           <div className="flex flex-1 flex-col justify-center px-6 pb-14 pt-28 text-right sm:px-8 lg:hidden">
-            <div className="rounded-[1.75rem] bg-[#080d1f]/48 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-[2px]">
+            <div className="-mx-6 px-6 py-6 sm:-mx-8 sm:px-8">
 
-            <p className="anim-fadeup text-white/70 text-sm font-bold tracking-[.1em] mb-3">
+            <p className="anim-fadeup mb-3 text-sm font-black tracking-[.1em] text-white">
               خدمات سیار خودرو در شیراز
             </p>
 
@@ -79,7 +79,7 @@ export default function LandingPage() {
               خدمات خودرو، <span style={{ color: "#ff6b82" }}>سریع</span> در محل شما
             </h1>
 
-            <p className="anim-fadeup delay-2 text-white/80 mb-6 max-w-md text-base sm:text-lg" style={{ lineHeight: 1.9 }}>
+            <p className="anim-fadeup delay-2 mb-6 max-w-md text-base font-extrabold text-white sm:text-lg" style={{ lineHeight: 1.9 }}>
               مکانیکا راه سریع و مطمئن برای درخواست خدمات سیار خودرو است؛ از مکانیک و باتری تا یدک‌کش و تعویض روغن، بدون دردسر و در کمترین زمان.
             </p>
 
@@ -102,7 +102,7 @@ export default function LandingPage() {
             {/* Trust indicators — three compact badges */}
             <div className="anim-fadeup delay-4 flex flex-wrap gap-x-5 gap-y-2">
               {MOBILE_TRUST.map((f) => (
-                <div key={f} className="flex items-center gap-1.5 text-white/75 text-sm font-semibold">
+                <div key={f} className="flex items-center gap-1.5 text-sm font-extrabold text-white">
                   <CheckIcon size={14} className="shrink-0 text-[#ff7088]"/>
                   {f}
                 </div>
@@ -116,7 +116,7 @@ export default function LandingPage() {
 
             {/* LEFT panel: text content */}
             <div className="ml-auto flex w-full max-w-[760px] flex-col justify-center px-8 py-24 text-right lg:px-16 lg:py-0">
-              <div className="rounded-[2rem] bg-[#080d1f]/46 p-8 shadow-[0_30px_90px_rgba(0,0,0,0.28)] backdrop-blur-[2px]">
+              <div className="-mr-16 py-10 pr-16 pl-10">
 
               <p className="anim-fadeup text-white/60 text-[17px] font-bold tracking-[.16em] uppercase mb-6">
                 خدمات سیار خودرو · شیراز
@@ -182,10 +182,20 @@ export default function LandingPage() {
       {/* Sections below are reordered on mobile (services first) via flex
           `order` utilities — no markup or assets are duplicated. Desktop
           keeps the original stats → services → how → cta order. */}
-      <main className="flex flex-col">
+      <main
+        className="relative flex flex-col overflow-hidden bg-[#090b12]"
+        style={{
+          backgroundImage:
+            "linear-gradient(180deg, rgba(6,8,14,0.72) 0%, rgba(6,8,14,0.84) 38%, rgba(6,8,14,0.9) 100%), url('/images/industrial-sections-bg.jpg')",
+          backgroundAttachment: "fixed",
+          backgroundPosition: "center top",
+          backgroundRepeat: "repeat-y",
+          backgroundSize: "100% auto",
+        }}
+      >
 
         {/* ══ STATS BAR ════════════════════════════════════════════════════ */}
-        <section className="order-2 lg:order-1" style={{ background: "#080d38" }}>
+        <section className="order-2 bg-black/24 backdrop-blur-[1px] lg:order-1">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {STATS.map((s, i) => (
               <div key={s.l} className={`text-center py-7 px-4 ${i % 2 === 0 && i < 2 ? "border-b md:border-b-0 border-white/10" : ""} ${i < 3 ? "md:border-l border-white/10" : ""}`}>
@@ -197,7 +207,7 @@ export default function LandingPage() {
         </section>
 
         {/* ══ SERVICES ════════════════════════════════════════════════════ */}
-        <section id="services" className="order-1 lg:order-2 scroll-mt-24 pt-8 lg:pt-16 pb-16 px-3 sm:px-6" style={{ background: "#0a0d2e" }}>
+        <section id="services" className="order-1 scroll-mt-24 bg-black/18 px-3 pb-16 pt-8 backdrop-blur-[1px] sm:px-6 lg:order-2 lg:pt-16">
           <div className="max-w-6xl mx-auto">
             {/* Heading is part of the desktop "چه کمکی می‌تونیم بکنیم؟" section
                 intro; the mobile hero already introduces the service, so the
@@ -223,7 +233,7 @@ export default function LandingPage() {
             process timeline (horizontal on desktop, vertical on mobile),
             both rendered from the shared STEPS data source above.
         ══════════════════════════════════════════════════════════════════ */}
-        <section id="how" className="order-3 scroll-mt-24 py-16 sm:py-20 lg:py-28 px-6 border-t border-white/5" style={{ background: "#080d38" }}>
+        <section id="how" className="order-3 scroll-mt-24 border-t border-white/10 bg-black/28 px-6 py-16 backdrop-blur-[1px] sm:py-20 lg:py-28">
           <div className="max-w-6xl mx-auto">
 
             {/* Header */}
@@ -307,7 +317,7 @@ export default function LandingPage() {
         </section>
 
         {/* ══ CTA BAND ════════════════════════════════════════════════════ */}
-        <section className="order-4 relative py-20 px-6 overflow-hidden" style={{ background: "#0d1035" }}>
+        <section className="relative order-4 overflow-hidden bg-black/30 px-6 py-20 backdrop-blur-[1px]">
           {/* Geometric accent shapes */}
           <div className="absolute inset-0 pointer-events-none select-none" aria-hidden>
             <div className="absolute rounded-full"
