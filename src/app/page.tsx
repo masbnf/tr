@@ -55,7 +55,7 @@ export default function LandingPage() {
           Mobile: text-first (no image), Desktop: original two-column layout.
       ══════════════════════════════════════════════════════════════════ */}
       <section
-        className="relative flex min-h-screen flex-col overflow-hidden bg-[#080d1f]"
+        className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#080d1f] lg:min-h-screen"
         style={{
           backgroundImage: "url('/images/garage-hero-bg.jpg')",
           backgroundPosition: "center",
@@ -68,8 +68,8 @@ export default function LandingPage() {
         <div className="relative z-10 flex-1 flex flex-col">
 
           {/* ── Mobile hero: text-first, no image ── */}
-          <div className="flex flex-1 flex-col justify-center px-6 pb-14 pt-28 text-right sm:px-8 lg:hidden">
-            <div className="-mx-6 px-6 py-6 sm:-mx-8 sm:px-8">
+          <div className="flex flex-1 flex-col justify-start px-6 pb-8 pt-20 text-right sm:px-8 lg:hidden">
+            <div className="-mx-6 px-6 py-4 sm:-mx-8 sm:px-8">
 
             <p className="anim-fadeup mb-3 text-sm font-black tracking-[.1em] text-white">
               خدمات سیار خودرو در شیراز
