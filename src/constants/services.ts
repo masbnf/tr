@@ -5,4 +5,5 @@ export const SERVICE_OPTIONS = [
   { value: ServiceType.BATTERY,    label: "باتری",           icon: "🔋" },
   { value: ServiceType.TOW,        label: "یدک‌کش",          icon: "🚛" },
   { value: ServiceType.OIL_CHANGE, label: "تعویض روغن",     icon: "🛢️" },
+  { value: ServiceType.FUEL_DELIVERY, label: "سوخت‌رسانی", icon: "⛽" },
 ] as const;

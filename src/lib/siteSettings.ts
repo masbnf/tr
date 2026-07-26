@@ -18,11 +18,49 @@ export type ServiceTag = {
   y?: number;
 };
 
+export type RequestFormTexts = {
+  badge: string;
+  title: string;
+  intro: string;
+  serviceTitle: string;
+  serviceDescription: string;
+  vehicleTitle: string;
+  vehiclePlaceholder: string;
+  detailsTitle: string;
+  detailsDescription: string;
+  scheduleTitle: string;
+  neighborhoodTitle: string;
+  neighborhoodPlaceholder: string;
+  imagesTitle: string;
+  imageUploadLabel: string;
+  notesTitle: string;
+  notesPlaceholder: string;
+  contactTitle: string;
+  namePlaceholder: string;
+  phonePlaceholder: string;
+  selectedServiceLabel: string;
+  submitLabel: string;
+  submitLoadingLabel: string;
+  privacyNote: string;
+  dateOptionsCsv: string;
+  timeOptionsCsv: string;
+};
+
+export type RequestServiceCopy = {
+  summary: string;
+  lead: string;
+  vehiclePlaceholder: string;
+  detailsCsv: string;
+  notesPlaceholder: string;
+};
+
 export type SiteSettings = {
   siteName: string;
   phone: string;
   navLinks: SiteNavLink[];
   serviceTags: ServiceTag[];
+  requestFormTexts: RequestFormTexts;
+  requestServiceCopies: Record<string, RequestServiceCopy>;
 };
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -62,6 +100,34 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     { id: "bike-full", vehicle: "bicycle", label: "سرویس کامل", href: "/request?vehicle=bicycle&service=full-service", color: "#10b981", enabled: true },
     { id: "bike-transport", vehicle: "bicycle", label: "حمل دوچرخه", href: "/request?vehicle=bicycle&service=transport", color: "#6366f1", enabled: true },
   ],
+  requestFormTexts: {
+    badge: "درخواست سرویس",
+    title: "فرم درخواست خدمات خودرو",
+    intro: "اطلاعات خودرو، سرویس مورد نیاز، زمان و محدوده اعزام را وارد کن تا درخواست دقیق‌تر ثبت شود.",
+    serviceTitle: "نوع سرویس",
+    serviceDescription: "سرویس‌هایی که در پنل مدیریت فعال باشند، اینجا نمایش داده می‌شوند.",
+    vehicleTitle: "مشخصات خودرو",
+    vehiclePlaceholder: "مثلا پژو ۲۰۶ مدل ۱۳۹۸",
+    detailsTitle: "جزئیات سرویس",
+    detailsDescription: "موارد مرتبط با خدمت انتخاب‌شده را مشخص کنید.",
+    scheduleTitle: "زمان مراجعه",
+    neighborhoodTitle: "محدوده اعزام",
+    neighborhoodPlaceholder: "جستجوی محله در شیراز",
+    imagesTitle: "تصاویر",
+    imageUploadLabel: "افزودن تصویر اختیاری",
+    notesTitle: "توضیحات تکمیلی",
+    notesPlaceholder: "توضیحات تکمیلی خود را بنویسید",
+    contactTitle: "اطلاعات تماس",
+    namePlaceholder: "نام و نام خانوادگی",
+    phonePlaceholder: "09*********",
+    selectedServiceLabel: "سرویس انتخابی",
+    submitLabel: "ثبت درخواست",
+    submitLoadingLabel: "در حال ارسال...",
+    privacyNote: "شماره موبایل شما فقط برای پیگیری همین درخواست استفاده می‌شود.",
+    dateOptionsCsv: "امروز|اولین زمان آزاد\nفردا|نوبت بعدی\nهماهنگی|تماس برای زمان",
+    timeOptionsCsv: "از ۹ تا ۱۲ صبح\nاز ۱۲ تا ۱۶ ظهر\nاز ۱۶ تا ۲۰ عصر\nتوافق با متخصص",
+  },
+  requestServiceCopies: {},
 };
 
 const STORAGE_KEY = "mechanica.siteSettings";
@@ -74,20 +140,19 @@ export function loadSiteSettings(): SiteSettings {
     if (!stored) return DEFAULT_SITE_SETTINGS;
 
     const parsed = JSON.parse(stored) as Partial<SiteSettings>;
-    const storedTags = Array.isArray(parsed.serviceTags) ? parsed.serviceTags : [];
-    const mergedTags = DEFAULT_SITE_SETTINGS.serviceTags.map((defaultTag) => {
-      const storedTag = storedTags.find((tag) => tag.id === defaultTag.id);
-      return storedTag ? { ...defaultTag, ...storedTag } : defaultTag;
-    });
-    const customTags = storedTags.filter(
-      (storedTag) => !DEFAULT_SITE_SETTINGS.serviceTags.some((defaultTag) => defaultTag.id === storedTag.id)
-    );
-
     return {
       ...DEFAULT_SITE_SETTINGS,
       ...parsed,
       navLinks: Array.isArray(parsed.navLinks) ? parsed.navLinks : DEFAULT_SITE_SETTINGS.navLinks,
-      serviceTags: [...mergedTags, ...customTags],
+      serviceTags: Array.isArray(parsed.serviceTags) ? parsed.serviceTags : DEFAULT_SITE_SETTINGS.serviceTags,
+      requestFormTexts: {
+        ...DEFAULT_SITE_SETTINGS.requestFormTexts,
+        ...(parsed.requestFormTexts ?? {}),
+      },
+      requestServiceCopies: {
+        ...DEFAULT_SITE_SETTINGS.requestServiceCopies,
+        ...(parsed.requestServiceCopies ?? {}),
+      },
     };
   } catch {
     return DEFAULT_SITE_SETTINGS;

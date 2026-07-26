@@ -1,12 +1,19 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
-import { SERVICE_OPTIONS } from "@/constants/services";
-import { ServiceType } from "@/types/enums";
+import {
+  DEFAULT_SITE_SETTINGS,
+  RequestServiceCopy,
+  ServiceTag,
+  SiteSettings,
+  VehicleId,
+  loadSiteSettings,
+} from "@/lib/siteSettings";
 import { CreateRequestInput } from "@/lib/validators";
+import { ServiceType } from "@/types/enums";
 
 type ShirazNeighborhood = {
   name: string;
@@ -19,7 +26,7 @@ const SHIRAZ_NEIGHBORHOODS: ShirazNeighborhood[] = [
   { name: "معالی آباد", lat: 29.641, lng: 52.478, zone: "north" },
   { name: "قدوسی غربی", lat: 29.634, lng: 52.496, zone: "north" },
   { name: "فرهنگ شهر", lat: 29.649, lng: 52.487, zone: "north" },
-  { name: "قصردشت", lat: 29.625, lng: 52.509, zone: "west" },
+  { name: "قصرالدشت", lat: 29.625, lng: 52.509, zone: "west" },
   { name: "ستارخان", lat: 29.627, lng: 52.519, zone: "central" },
   { name: "عفیف آباد", lat: 29.629, lng: 52.531, zone: "central" },
   { name: "زرگری", lat: 29.624, lng: 52.545, zone: "central" },
@@ -36,61 +43,96 @@ const SHIRAZ_NEIGHBORHOODS: ShirazNeighborhood[] = [
   { name: "سعدیه", lat: 29.626, lng: 52.590, zone: "east" },
 ];
 
-const DETAIL_OPTIONS = [
-  "تعویض لنت جلو",
-  "تعویض لنت عقب",
-  "نیاز به تشخیص متخصص",
-  "چک کردن روغن ترمز",
+const SLUG_TO_SERVICE: Record<string, ServiceType> = {
+  battery: ServiceType.BATTERY,
+  "oil-change": ServiceType.OIL_CHANGE,
+  tow: ServiceType.TOW,
+  transport: ServiceType.TOW,
+  "fuel-delivery": ServiceType.FUEL_DELIVERY,
+  "engine-repair": ServiceType.MECHANIC,
+  tire: ServiceType.MECHANIC,
+  "car-wash": ServiceType.MECHANIC,
+  electrical: ServiceType.MECHANIC,
+  lights: ServiceType.MECHANIC,
+  "brake-pads": ServiceType.MECHANIC,
+  paint: ServiceType.MECHANIC,
+  brakes: ServiceType.MECHANIC,
+  chain: ServiceType.MECHANIC,
+  puncture: ServiceType.MECHANIC,
+  "inner-tube": ServiceType.MECHANIC,
+  gears: ServiceType.MECHANIC,
+  wheel: ServiceType.MECHANIC,
+  "full-service": ServiceType.MECHANIC,
+};
+
+const DEFAULT_DETAILS = [
+  "نیاز به بررسی متخصص",
+  "مشکل فوری است",
+  "نیاز به اعلام قیمت قبل از اعزام",
+  "هماهنگی تلفنی لازم است",
 ];
 
-const DATE_OPTIONS = [
-  { id: "today", title: "امروز", subtitle: "اولین زمان" },
-  { id: "tomorrow", title: "فردا", subtitle: "نوبت بعدی" },
-  { id: "calendar", title: "تقویم", subtitle: "انتخاب تاریخ" },
-];
+function getSlugFromHref(href: string) {
+  try {
+    return new URL(href, "http://local").searchParams.get("service");
+  } catch {
+    return null;
+  }
+}
 
-const TIME_OPTIONS = ["از ۹ تا ۱۲ صبح", "از ۱۲ تا ۱۶ ظهر", "از ۱۶ تا ۲۰ عصر", "توافق با متخصص"];
+function getVehicleFromQuery(value: string | null): VehicleId {
+  return value === "motorcycle" || value === "bicycle" ? value : "car";
+}
 
-const STEPS = [
-  "service",
-  "vehicle",
-  "details",
-  "schedule",
-  "neighborhood",
-  "images",
-  "notes",
-  "phone",
-] as const;
+function getServiceType(tag: ServiceTag): ServiceType {
+  const slug = getSlugFromHref(tag.href);
+  return slug ? SLUG_TO_SERVICE[slug] ?? ServiceType.MECHANIC : ServiceType.MECHANIC;
+}
 
-function serviceTypeFromSlug(slug: string | null): ServiceType | undefined {
-  if (slug === "battery") return ServiceType.BATTERY;
-  if (slug === "oil-change") return ServiceType.OIL_CHANGE;
-  if (slug === "tow") return ServiceType.TOW;
-  return undefined;
+function splitLines(value: string) {
+  return value
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseDateOptions(value: string) {
+  const rows = splitLines(value);
+  return rows.length
+    ? rows.map((row, index) => {
+        const [title, subtitle] = row.split("|").map((part) => part.trim());
+        return { id: `date-${index}`, title, subtitle: subtitle || "زمان پیشنهادی" };
+      })
+    : [{ id: "date-0", title: "امروز", subtitle: "اولین زمان آزاد" }];
+}
+
+function getFallbackCopy(tag: ServiceTag): RequestServiceCopy {
+  return {
+    summary: `درخواست ${tag.label} با هماهنگی سریع متخصص`,
+    lead: `برای ${tag.label}، مشخصات خودرو و شرایط فعلی را وارد کنید.`,
+    vehiclePlaceholder: DEFAULT_SITE_SETTINGS.requestFormTexts.vehiclePlaceholder,
+    detailsCsv: DEFAULT_DETAILS.join("\n"),
+    notesPlaceholder: DEFAULT_SITE_SETTINGS.requestFormTexts.notesPlaceholder,
+  };
 }
 
 function zoneLabel(zone: ShirazNeighborhood["zone"]) {
-  const labels = {
-    central: "مرکزی",
-    north: "شمال",
-    south: "جنوب",
-    east: "شرق",
-    west: "غرب",
-  };
+  const labels = { central: "مرکزی", north: "شمال", south: "جنوب", east: "شرق", west: "غرب" };
   return labels[zone];
 }
 
 export default function RequestForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialService = serviceTypeFromSlug(searchParams.get("service")) ?? ServiceType.MECHANIC;
+  const initialVehicle = getVehicleFromQuery(searchParams.get("vehicle"));
+  const initialSlug = searchParams.get("service");
 
-  const [step, setStep] = useState(0);
-  const [serviceType, setServiceType] = useState<ServiceType>(initialService);
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+  const [selectedTagId, setSelectedTagId] = useState("");
   const [vehicleModel, setVehicleModel] = useState("");
   const [details, setDetails] = useState<string[]>([]);
-  const [date, setDate] = useState(DATE_OPTIONS[0].id);
-  const [time, setTime] = useState(TIME_OPTIONS[0]);
+  const [date, setDate] = useState("date-0");
+  const [time, setTime] = useState("");
   const [neighborhoodQuery, setNeighborhoodQuery] = useState("");
   const [neighborhood, setNeighborhood] = useState<ShirazNeighborhood | null>(null);
   const [images, setImages] = useState<string[]>([]);
@@ -99,16 +141,59 @@ export default function RequestForm() {
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const progress = Math.round(((step + 1) / STEPS.length) * 100);
-  const currentStep = STEPS[step];
+  useEffect(() => {
+    const load = () => setSettings(loadSiteSettings());
+    const handleSettings = (event: Event) => {
+      const customEvent = event as CustomEvent<SiteSettings>;
+      setSettings(customEvent.detail ?? loadSiteSettings());
+    };
+
+    load();
+    window.addEventListener("mechanica:site-settings", handleSettings);
+    window.addEventListener("storage", load);
+    return () => {
+      window.removeEventListener("mechanica:site-settings", handleSettings);
+      window.removeEventListener("storage", load);
+    };
+  }, []);
+
+  const serviceTags = useMemo(() => {
+    const tags = settings.serviceTags.filter((tag) => tag.enabled && tag.vehicle === initialVehicle);
+    return tags.length ? tags : settings.serviceTags.filter((tag) => tag.enabled);
+  }, [initialVehicle, settings.serviceTags]);
+
+  useEffect(() => {
+    if (selectedTagId && serviceTags.some((tag) => tag.id === selectedTagId)) return;
+    const matchingTag = serviceTags.find((tag) => getSlugFromHref(tag.href) === initialSlug);
+    setSelectedTagId(matchingTag?.id ?? serviceTags[0]?.id ?? "");
+    setDetails([]);
+  }, [initialSlug, selectedTagId, serviceTags]);
+
+  const text = settings.requestFormTexts;
+  const selectedTag = serviceTags.find((tag) => tag.id === selectedTagId) ?? serviceTags[0];
+  const selectedCopy = selectedTag
+    ? { ...getFallbackCopy(selectedTag), ...(settings.requestServiceCopies[selectedTag.id] ?? {}) }
+    : getFallbackCopy({
+        id: "fallback",
+        vehicle: "car",
+        label: "سرویس",
+        href: "/request",
+        color: "#06b6d4",
+        enabled: true,
+      });
+  const dateOptions = parseDateOptions(text.dateOptionsCsv);
+  const timeOptions = splitLines(text.timeOptionsCsv);
+  const detailOptions = splitLines(selectedCopy.detailsCsv);
+
+  useEffect(() => {
+    if (!time && timeOptions[0]) setTime(timeOptions[0]);
+  }, [time, timeOptions]);
 
   const filteredNeighborhoods = useMemo(() => {
     const query = neighborhoodQuery.trim();
-    if (!query) return SHIRAZ_NEIGHBORHOODS.slice(0, 6);
+    if (!query) return SHIRAZ_NEIGHBORHOODS.slice(0, 8);
     return SHIRAZ_NEIGHBORHOODS.filter((item) => item.name.includes(query)).slice(0, 8);
   }, [neighborhoodQuery]);
-
-  const selectedServiceLabel = SERVICE_OPTIONS.find((opt) => opt.value === serviceType)?.label ?? serviceType;
 
   const toggleDetail = (value: string) => {
     setDetails((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
@@ -119,56 +204,54 @@ export default function RequestForm() {
     setImages(files.map((file) => file.name));
   };
 
-  const validateStep = () => {
-    if (currentStep === "vehicle" && vehicleModel.trim().length < 2) {
-      toast.error("برند و مدل خودرو را وارد کنید.");
+  const validateAll = () => {
+    if (!selectedTag) {
+      toast.error("نوع سرویس را انتخاب کنید.");
       return false;
     }
-    if (currentStep === "details" && details.length === 0) {
-      toast.error("حداقل یک مورد خدمت را انتخاب کنید.");
+    if (vehicleModel.trim().length < 2) {
+      toast.error("مشخصات خودرو را وارد کنید.");
       return false;
     }
-    if (currentStep === "neighborhood" && !neighborhood) {
+    if (details.length === 0) {
+      toast.error("حداقل یک مورد از جزئیات سرویس را انتخاب کنید.");
+      return false;
+    }
+    if (!neighborhood) {
       toast.error("محله خود را در شیراز انتخاب کنید.");
       return false;
     }
-    if (currentStep === "phone") {
-      if (name.trim().length < 2) {
-        toast.error("نام خود را وارد کنید.");
-        return false;
-      }
-      if (!/^09[0-9]{9}$/.test(phone)) {
-        toast.error("شماره موبایل معتبر وارد کنید.");
-        return false;
-      }
+    if (name.trim().length < 2) {
+      toast.error("نام خود را وارد کنید.");
+      return false;
+    }
+    if (!/^09[0-9]{9}$/.test(phone)) {
+      toast.error("شماره موبایل معتبر وارد کنید.");
+      return false;
     }
     return true;
   };
 
-  const next = () => {
-    if (!validateStep()) return;
-    setStep((prev) => Math.min(prev + 1, STEPS.length - 1));
-  };
-
-  const back = () => setStep((prev) => Math.max(prev - 1, 0));
-
-  const submit = async () => {
-    if (!validateStep() || !neighborhood) return;
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!validateAll() || !selectedTag || !neighborhood) return;
     setSubmitting(true);
 
+    const selectedDate = dateOptions.find((item) => item.id === date)?.title ?? dateOptions[0]?.title ?? "";
     const payload: CreateRequestInput = {
       name: name.trim(),
       phone,
-      serviceType,
+      serviceType: getServiceType(selectedTag),
       locationLat: neighborhood.lat,
       locationLng: neighborhood.lng,
       description: [
-        `خدمت اصلی: ${selectedServiceLabel}`,
+        `خدمت انتخابی: ${selectedTag.label}`,
+        `لینک/اسلاگ خدمت: ${selectedTag.href}`,
         `خودرو: ${vehicleModel}`,
         `جزئیات خدمت: ${details.join("، ")}`,
-        `زمان: ${DATE_OPTIONS.find((item) => item.id === date)?.title ?? date} - ${time}`,
+        `زمان: ${selectedDate} - ${time}`,
         `محله شیراز: ${neighborhood.name} (${zoneLabel(neighborhood.zone)})`,
-        images.length ? `تصاویر پیوست‌شده: ${images.join("، ")}` : "تصویر پیوست نشده",
+        images.length ? `تصاویر انتخاب‌شده: ${images.join("، ")}` : "تصویر انتخاب نشده",
         description ? `توضیحات: ${description}` : "",
         "قیمت: در انتظار فرمول محاسبه",
       ]
@@ -196,240 +279,148 @@ export default function RequestForm() {
     }
   };
 
-  const primaryAction = currentStep === "phone" ? submit : next;
-
   return (
-    <div className="overflow-hidden rounded-[1.7rem] border border-cyan-200/25 bg-white/[0.88] text-slate-950 shadow-[0_18px_70px_rgba(15,23,42,0.2)] backdrop-blur-xl">
-      <div className="flex items-center gap-4 px-5 pt-5">
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-2xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-          aria-label="بستن"
-        >
-          ×
+    <form onSubmit={submit} className="rounded-3xl border border-slate-200 bg-white p-5 text-slate-950 shadow-[0_24px_80px_rgba(15,23,42,0.18)] sm:p-7">
+      <header className="mb-7 border-b border-slate-200 pb-6">
+        <button type="button" onClick={() => router.push("/")} className="mb-5 rounded-xl border border-slate-200 px-4 py-2 text-sm font-black text-slate-600 transition hover:border-cyan-400 hover:text-cyan-700">
+          بازگشت
         </button>
-        <div className="relative h-2 flex-1 rounded-full bg-slate-200">
-          <div className="h-full rounded-full bg-cyan-500 transition-all" style={{ width: `${progress}%` }} />
-          <span
-            className="absolute top-1/2 -translate-y-1/2 rounded-full bg-cyan-500 px-2 py-0.5 text-[11px] font-black text-white shadow"
-            style={{ left: `calc(${progress}% - 18px)` }}
-          >
-            {progress}٪
-          </span>
-        </div>
-      </div>
+        <p className="text-xs font-black tracking-widest text-cyan-600">{text.badge}</p>
+        <h1 className="mt-2 text-3xl font-black leading-tight text-slate-950 sm:text-4xl">{text.title}</h1>
+        <p className="mt-3 max-w-3xl text-sm font-bold leading-7 text-slate-500">{text.intro}</p>
+      </header>
 
-      <div className="min-h-[480px] px-6 py-9 sm:px-8">
-        {currentStep === "service" && (
-          <section>
-            <h2 className="text-center text-xl font-black">نوع خدمت اصلی را انتخاب کنید:</h2>
-            <div className="mt-8 grid grid-cols-2 gap-3">
-              {SERVICE_OPTIONS.map((option) => {
-                const active = serviceType === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setServiceType(option.value)}
-                    className={`min-h-[74px] rounded-2xl border px-4 py-3 text-sm font-black transition ${
-                      active ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-200 bg-white hover:border-cyan-400"
-                    }`}
-                  >
-                    <span className="mb-1 block text-xl">{option.icon}</span>
-                    {option.label}
-                  </button>
-                );
-              })}
+      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <section className="rounded-2xl border border-slate-200 p-4 xl:col-span-2">
+          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2 className="text-xl font-black">{text.serviceTitle}</h2>
+              <p className="mt-2 text-sm font-bold leading-7 text-slate-500">{text.serviceDescription}</p>
             </div>
-          </section>
-        )}
-
-        {currentStep === "vehicle" && (
-          <section>
-            <h2 className="text-center text-xl font-black">برند و مدل خودرو را در کادر زیر وارد کنید:</h2>
-            <input
-              value={vehicleModel}
-              onChange={(event) => setVehicleModel(event.target.value)}
-              className="mt-10 w-full rounded-lg border border-cyan-500 px-4 py-4 text-right text-lg outline-none focus:ring-4 focus:ring-cyan-100"
-              placeholder="مثلا پژو ۲۰۶ مدل ۱۳۹۸"
-              autoFocus
-            />
-          </section>
-        )}
-
-        {currentStep === "details" && (
-          <section>
-            <h2 className="text-center text-xl font-black">خدمت درخواستی را انتخاب کنید:</h2>
-            <div className="mt-8 space-y-3">
-              {DETAIL_OPTIONS.map((item) => {
-                const checked = details.includes(item);
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => toggleDetail(item)}
-                    className={`flex w-full items-center justify-between rounded-lg border px-4 py-4 text-right text-base transition ${
-                      checked ? "border-cyan-500 bg-cyan-50 shadow-[inset_-5px_0_0_#06a8d8]" : "border-slate-200 bg-white"
-                    }`}
-                  >
-                    <span>{item}</span>
-                    <span className={`flex h-6 w-6 items-center justify-center rounded border text-white ${checked ? "border-cyan-500 bg-cyan-500" : "border-slate-300 bg-white"}`}>
-                      {checked ? "✓" : ""}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {currentStep === "schedule" && (
-          <section>
-            <h2 className="text-center text-xl font-black">چه زمانی به این خدمت نیاز دارید؟</h2>
-            <h3 className="mt-8 text-center text-lg font-black">انتخاب تاریخ</h3>
-            <div className="mt-5 grid grid-cols-3 gap-3">
-              {DATE_OPTIONS.map((item) => (
+            <span className="text-xs font-black text-slate-400">{serviceTags.length} خدمت فعال</span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+            {serviceTags.map((tag, index) => {
+              const active = tag.id === selectedTag?.id;
+              const copy = { ...getFallbackCopy(tag), ...(settings.requestServiceCopies[tag.id] ?? {}) };
+              return (
                 <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => setDate(item.id)}
-                  className={`min-h-[112px] rounded-lg border p-3 text-sm font-black transition ${
-                    date === item.id ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-200 bg-white"
-                  }`}
-                >
-                  <span className="block">{item.title}</span>
-                  <span className="mt-3 block text-xs opacity-75">{item.subtitle}</span>
-                </button>
-              ))}
-            </div>
-            <div className="my-7 h-px bg-slate-200" />
-            <h3 className="text-center text-lg font-black">انتخاب حدود ساعت</h3>
-            <div className="mx-auto mt-5 max-w-[230px] space-y-3">
-              {TIME_OPTIONS.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setTime(item)}
-                  className={`w-full rounded-lg border px-4 py-3 text-sm font-black transition ${
-                    time === item ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-200 bg-white"
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {currentStep === "neighborhood" && (
-          <section>
-            <h2 className="text-center text-xl font-black">در کدام محله شیراز هستید؟</h2>
-            <input
-              value={neighborhoodQuery}
-              onChange={(event) => setNeighborhoodQuery(event.target.value)}
-              className="mt-8 w-full rounded-lg border border-cyan-500 px-4 py-4 text-right text-lg outline-none focus:ring-4 focus:ring-cyan-100"
-              placeholder="جستجوی محله در شیراز"
-              autoFocus
-            />
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              {filteredNeighborhoods.map((item) => (
-                <button
-                  key={item.name}
+                  key={tag.id}
                   type="button"
                   onClick={() => {
-                    setNeighborhood(item);
-                    setNeighborhoodQuery(item.name);
+                    setSelectedTagId(tag.id);
+                    setDetails([]);
                   }}
-                  className={`rounded-xl border px-4 py-3 text-right text-sm font-bold transition ${
-                    neighborhood?.name === item.name ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-slate-200 bg-white"
+                  className={`group relative min-h-[150px] overflow-hidden rounded-2xl border p-4 text-right transition ${
+                    active ? "border-slate-950 bg-slate-950 text-white shadow-[0_18px_50px_rgba(15,23,42,0.25)]" : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white"
                   }`}
                 >
-                  {item.name}
-                  <span className="mt-1 block text-xs text-slate-400">زون قیمت‌گذاری آینده: {zoneLabel(item.zone)}</span>
+                  <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: tag.color }} />
+                  <span className={`mb-4 flex h-9 w-9 items-center justify-center rounded-xl text-xs font-black ${active ? "bg-white text-slate-950" : "bg-white text-slate-500 shadow-sm"}`}>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="block text-base font-black leading-7">{tag.label}</span>
+                  <span className={`mt-2 block text-xs font-bold leading-6 ${active ? "text-white/70" : "text-slate-500"}`}>{copy.summary}</span>
                 </button>
-              ))}
-            </div>
-            <div className="mt-5 overflow-hidden rounded-2xl border border-cyan-100 bg-[linear-gradient(135deg,#e0f7ff,#f8fbff)] p-4">
-              <div className="flex h-36 items-center justify-center rounded-xl border border-dashed border-cyan-300 text-center text-sm font-black text-cyan-700">
-                {neighborhood ? `محدوده ${neighborhood.name} روی نقشه شیراز انتخاب شد` : "نقشه جستجوی محله‌های شیراز"}
-              </div>
-            </div>
-          </section>
-        )}
+              );
+            })}
+          </div>
+        </section>
 
-        {currentStep === "images" && (
-          <section>
-            <h2 className="text-center text-xl font-black">در صورت تمایل، تصاویر مرتبط با سفارش خود را بارگذاری کنید</h2>
-            <p className="mt-5 text-center text-lg">(اختیاری)</p>
-            <label className="mx-auto mt-8 flex h-52 w-52 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-400 text-cyan-600 transition hover:border-cyan-500 hover:bg-cyan-50">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-500 text-xl font-black text-white">+</span>
-              <span className="mt-4 text-sm font-black">افزودن تصویر</span>
-              <input type="file" accept="image/*" multiple className="hidden" onChange={handleImages} />
-            </label>
-            {images.length > 0 && <p className="mt-4 text-center text-sm font-bold text-slate-500">{images.length} تصویر انتخاب شد</p>}
-          </section>
-        )}
+        <section className="rounded-2xl border border-slate-200 p-4">
+          <h2 className="text-xl font-black">{text.vehicleTitle}</h2>
+          <p className="mt-2 text-sm font-bold leading-7 text-slate-500">{selectedCopy.lead}</p>
+          <input
+            value={vehicleModel}
+            onChange={(event) => setVehicleModel(event.target.value)}
+            className="mt-4 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100"
+            placeholder={selectedCopy.vehiclePlaceholder || text.vehiclePlaceholder}
+          />
+        </section>
 
-        {currentStep === "notes" && (
-          <section>
-            <h2 className="text-center text-xl font-black">با افزودن جزئیات بیشتر، قیمت‌های دقیق‌تری ارائه می‌شود.</h2>
-            <p className="mt-5 text-center text-lg">(اختیاری)</p>
-            <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              rows={7}
-              className="mt-8 w-full resize-none rounded-lg border border-cyan-500 px-4 py-4 text-right text-lg outline-none focus:ring-4 focus:ring-cyan-100"
-              placeholder="توضیحات تکمیلی خود را بنویسید"
-            />
-          </section>
-        )}
+        <section className="rounded-2xl border border-slate-200 p-4">
+          <h2 className="text-xl font-black">{text.detailsTitle}</h2>
+          <p className="mt-2 text-sm font-bold leading-7 text-slate-500">{text.detailsDescription}</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {detailOptions.map((item) => {
+              const checked = details.includes(item);
+              return (
+                <button key={item} type="button" onClick={() => toggleDetail(item)} className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-4 text-right text-sm font-black transition ${checked ? "border-cyan-500 bg-cyan-50 text-cyan-800" : "border-slate-200 bg-slate-50 hover:border-cyan-300"}`}>
+                  <span>{item}</span>
+                  <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-xs ${checked ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-300 bg-white text-transparent"}`}>
+                    ✓
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-        {currentStep === "phone" && (
-          <section>
-            <h2 className="text-center text-lg font-black leading-8">
-              برای مطلع شدن از قیمت پیشنهادی متخصصین از طریق پیامک، اطلاعات خود را وارد نمایید.
-            </h2>
-            <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              className="mt-8 w-full rounded-lg border border-cyan-500 px-4 py-4 text-right text-lg outline-none focus:ring-4 focus:ring-cyan-100"
-              placeholder="نام و نام خانوادگی"
-            />
-            <input
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              maxLength={11}
-              dir="ltr"
-              className="mt-4 w-full rounded-lg border border-cyan-500 px-4 py-4 text-center text-lg tracking-[0.3em] outline-none focus:ring-4 focus:ring-cyan-100"
-              placeholder="09*********"
-            />
-            <div className="mt-8 flex items-center gap-4 rounded-lg border border-slate-200 bg-white p-4 text-sm leading-7 text-slate-500">
-              <span className="text-4xl text-slate-300">🔒</span>
-              <p>شماره موبایل شما پیش ما محفوظ خواهد ماند و تنها به درخواست خودتان در اختیار متخصصین قرار می‌گیرد.</p>
-            </div>
-          </section>
-        )}
+        <section className="rounded-2xl border border-slate-200 p-4">
+          <h2 className="text-xl font-black">{text.scheduleTitle}</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {dateOptions.map((item) => (
+              <button key={item.id} type="button" onClick={() => setDate(item.id)} className={`rounded-2xl border p-4 text-right transition ${date === item.id ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-200 bg-slate-50"}`}>
+                <span className="block text-sm font-black">{item.title}</span>
+                <span className="mt-1 block text-xs font-bold opacity-75">{item.subtitle}</span>
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {timeOptions.map((item) => (
+              <button key={item} type="button" onClick={() => setTime(item)} className={`rounded-xl border px-3 py-3 text-sm font-black transition ${time === item ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-slate-200 bg-white"}`}>
+                {item}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 p-4">
+          <h2 className="text-xl font-black">{text.neighborhoodTitle}</h2>
+          <input value={neighborhoodQuery} onChange={(event) => setNeighborhoodQuery(event.target.value)} className="mt-4 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={text.neighborhoodPlaceholder} />
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {filteredNeighborhoods.map((item) => (
+              <button key={item.name} type="button" onClick={() => { setNeighborhood(item); setNeighborhoodQuery(item.name); }} className={`rounded-xl border px-4 py-3 text-right text-sm font-bold transition ${neighborhood?.name === item.name ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-slate-200 bg-white"}`}>
+                {item.name}
+                <span className="mt-1 block text-xs text-slate-400">زون: {zoneLabel(item.zone)}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 p-4">
+          <h2 className="text-xl font-black">{text.imagesTitle}</h2>
+          <label className="mt-4 flex min-h-[150px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center transition hover:border-cyan-400 hover:bg-cyan-50">
+            <span className="text-3xl font-black text-cyan-600">+</span>
+            <span className="mt-2 text-sm font-black text-slate-700">{text.imageUploadLabel}</span>
+            <input type="file" accept="image/*" multiple className="hidden" onChange={handleImages} />
+          </label>
+          {images.length > 0 ? <p className="mt-3 text-sm font-bold text-slate-500">{images.length} تصویر انتخاب شد</p> : null}
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 p-4 xl:col-span-2">
+          <h2 className="text-xl font-black">{text.notesTitle}</h2>
+          <textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={5} className="mt-4 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={selectedCopy.notesPlaceholder || text.notesPlaceholder} />
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 p-4 xl:col-span-2">
+          <h2 className="text-xl font-black">{text.contactTitle}</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={text.namePlaceholder} />
+            <input value={phone} onChange={(event) => setPhone(event.target.value)} maxLength={11} dir="ltr" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-center text-base font-bold tracking-[0.18em] outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={text.phonePlaceholder} />
+          </div>
+          <p className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold leading-7 text-slate-500">{text.privacyNote}</p>
+        </section>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 border-t border-slate-200 px-5 py-4">
-        <button
-          type="button"
-          onClick={back}
-          disabled={step === 0 || submitting}
-          className="rounded-lg border border-cyan-700 px-5 py-3 font-black text-cyan-700 transition hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          قبل
+      <footer className="mt-7 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm font-bold text-slate-500">
+          {text.selectedServiceLabel}: <span className="text-slate-900">{selectedTag?.label ?? "انتخاب نشده"}</span>
+        </div>
+        <button type="submit" disabled={submitting} className="rounded-2xl bg-[#2388bd] px-8 py-4 font-black text-white transition hover:bg-[#1677aa] disabled:cursor-not-allowed disabled:opacity-60">
+          {submitting ? text.submitLoadingLabel : text.submitLabel}
         </button>
-        <button
-          type="button"
-          onClick={primaryAction}
-          disabled={submitting}
-          className="rounded-lg bg-[#2388bd] px-5 py-3 font-black text-white transition hover:bg-[#1677aa] disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {submitting ? "در حال ارسال..." : currentStep === "phone" ? "دریافت کد" : "ادامه"}
-        </button>
-      </div>
-    </div>
+      </footer>
+    </form>
   );
 }

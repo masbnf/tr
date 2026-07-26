@@ -3,6 +3,7 @@ export enum ServiceType {
   BATTERY    = "battery",     // باتری
   TOW        = "tow",         // یدک‌کش
   OIL_CHANGE = "oil_change",  // تعویض روغن
+  FUEL_DELIVERY = "fuel_delivery",  // سوخت‌رسانی
 }
 
 export enum OrderStatus {

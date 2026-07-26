@@ -10,6 +10,8 @@ import {
   SiteSettings,
   ServiceTag,
   VehicleId,
+  RequestFormTexts,
+  RequestServiceCopy,
   loadSiteSettings,
   saveSiteSettings,
 } from "@/lib/siteSettings";
@@ -37,6 +39,7 @@ export default function AdminSettings() {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [message, setMessage] = useState("");
   const [activeVehicle, setActiveVehicle] = useState<VehicleId>("car");
+  const [activeTab, setActiveTab] = useState<"site" | "formTexts">("site");
 
   const persistAndReload = (nextSettings: SiteSettings, alertMessage: string) => {
     saveSiteSettings(nextSettings);
@@ -78,6 +81,39 @@ export default function AdminSettings() {
       ...prev,
       navLinks: [...prev.navLinks, { id: nextLinkId(), label: "لینک جدید", href: "/", enabled: true }],
     }));
+  };
+
+  const updateFormText = (key: keyof RequestFormTexts, value: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      requestFormTexts: {
+        ...prev.requestFormTexts,
+        [key]: value,
+      },
+    }));
+  };
+
+  const updateServiceCopy = (tagId: string, patch: Partial<RequestServiceCopy>) => {
+    setSettings((prev) => {
+      const current = prev.requestServiceCopies[tagId] ?? {
+        summary: "",
+        lead: "",
+        vehiclePlaceholder: prev.requestFormTexts.vehiclePlaceholder,
+        detailsCsv: "",
+        notesPlaceholder: prev.requestFormTexts.notesPlaceholder,
+      };
+
+      return {
+        ...prev,
+        requestServiceCopies: {
+          ...prev.requestServiceCopies,
+          [tagId]: {
+            ...current,
+            ...patch,
+          },
+        },
+      };
+    });
   };
 
   const updateTag = (id: string, patch: Partial<ServiceTag>) => {
@@ -167,6 +203,24 @@ export default function AdminSettings() {
         </div>
       ) : null}
 
+      <div className="flex flex-wrap gap-2 rounded-3xl border border-white/10 bg-white/[0.06] p-2">
+        <button
+          type="button"
+          onClick={() => setActiveTab("site")}
+          className={`rounded-2xl px-5 py-3 text-sm font-black transition ${activeTab === "site" ? "bg-white text-slate-950" : "text-white/70 hover:bg-white/10 hover:text-white"}`}
+        >
+          سایت و منوها
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("formTexts")}
+          className={`rounded-2xl px-5 py-3 text-sm font-black transition ${activeTab === "formTexts" ? "bg-white text-slate-950" : "text-white/70 hover:bg-white/10 hover:text-white"}`}
+        >
+          متن‌های فرم درخواست
+        </button>
+      </div>
+
+      {activeTab === "site" ? (
       <form onSubmit={submitSettings} className="grid gap-5 xl:grid-cols-[1fr_420px]">
         <section className="rounded-3xl border border-white/10 bg-white p-4 text-slate-900 shadow-card sm:p-5">
           <p className="text-xs font-bold tracking-widest text-brand-600">IDENTITY</p>
@@ -341,7 +395,18 @@ export default function AdminSettings() {
           </div>
         </section>
       </form>
+      ) : (
+        <RequestFormTextsPanel
+          texts={settings.requestFormTexts}
+          serviceTags={settings.serviceTags}
+          serviceCopies={settings.requestServiceCopies}
+          onChange={updateFormText}
+          onServiceCopyChange={updateServiceCopy}
+          onSave={submitSettings}
+        />
+      )}
 
+      {activeTab === "site" ? (
       <section className="grid gap-5 lg:grid-cols-[1fr_360px]">
         <div className="rounded-3xl border border-white/10 bg-white p-4 text-slate-900 shadow-card sm:p-5">
           <div className="mb-4">
@@ -352,7 +417,163 @@ export default function AdminSettings() {
         </div>
         <ProviderComposer onCreated={loadProviders} />
       </section>
+      ) : null}
     </div>
+  );
+}
+
+function RequestFormTextsPanel({
+  texts,
+  serviceTags,
+  serviceCopies,
+  onChange,
+  onServiceCopyChange,
+  onSave,
+}: {
+  texts: RequestFormTexts;
+  serviceTags: ServiceTag[];
+  serviceCopies: Record<string, RequestServiceCopy>;
+  onChange: (key: keyof RequestFormTexts, value: string) => void;
+  onServiceCopyChange: (tagId: string, patch: Partial<RequestServiceCopy>) => void;
+  onSave: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  const groups: Array<{
+    title: string;
+    description: string;
+    fields: Array<{ key: keyof RequestFormTexts; label: string; multiline?: boolean }>;
+  }> = [
+    {
+      title: "سربرگ فرم",
+      description: "متن‌های اصلی بالای فرم درخواست.",
+      fields: [
+        { key: "badge", label: "برچسب کوتاه" },
+        { key: "title", label: "عنوان اصلی" },
+        { key: "intro", label: "توضیح معرفی", multiline: true },
+      ],
+    },
+    {
+      title: "عنوان بخش‌های فرم",
+      description: "این عنوان‌ها در کارت‌های فرم کاربر نمایش داده می‌شوند.",
+      fields: [
+        { key: "serviceTitle", label: "بخش نوع سرویس" },
+        { key: "serviceDescription", label: "توضیح بخش نوع سرویس", multiline: true },
+        { key: "vehicleTitle", label: "بخش مشخصات خودرو" },
+        { key: "vehiclePlaceholder", label: "placeholder مشخصات خودرو" },
+        { key: "detailsTitle", label: "بخش جزئیات سرویس" },
+        { key: "detailsDescription", label: "توضیح جزئیات سرویس", multiline: true },
+        { key: "scheduleTitle", label: "بخش زمان مراجعه" },
+        { key: "neighborhoodTitle", label: "بخش محدوده اعزام" },
+        { key: "neighborhoodPlaceholder", label: "placeholder محله" },
+        { key: "imagesTitle", label: "بخش تصاویر" },
+        { key: "imageUploadLabel", label: "متن آپلود تصویر" },
+        { key: "notesTitle", label: "بخش توضیحات تکمیلی" },
+        { key: "notesPlaceholder", label: "placeholder توضیحات" },
+        { key: "contactTitle", label: "بخش اطلاعات تماس" },
+        { key: "namePlaceholder", label: "placeholder نام" },
+        { key: "phonePlaceholder", label: "placeholder موبایل" },
+      ],
+    },
+    {
+      title: "دکمه و اعتماد",
+      description: "متن دکمه نهایی و یادداشت حریم خصوصی.",
+      fields: [
+        { key: "dateOptionsCsv", label: "گزینه‌های تاریخ", multiline: true },
+        { key: "timeOptionsCsv", label: "گزینه‌های ساعت", multiline: true },
+        { key: "selectedServiceLabel", label: "برچسب سرویس انتخابی" },
+        { key: "submitLabel", label: "متن دکمه ثبت" },
+        { key: "submitLoadingLabel", label: "متن دکمه هنگام ارسال" },
+        { key: "privacyNote", label: "متن حریم خصوصی", multiline: true },
+      ],
+    },
+  ];
+
+  return (
+    <form onSubmit={onSave} className="space-y-5">
+      {groups.map((group) => (
+        <section key={group.title} className="rounded-3xl border border-white/10 bg-white p-4 text-slate-900 shadow-card sm:p-5">
+          <p className="text-xs font-bold tracking-widest text-brand-600">REQUEST FORM COPY</p>
+          <h3 className="mt-2 text-xl font-black">{group.title}</h3>
+          <p className="mt-2 text-sm font-bold leading-7 text-slate-500">{group.description}</p>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            {group.fields.map((field) => (
+              <label key={field.key} className={field.multiline ? "block lg:col-span-2" : "block"}>
+                <span className="mb-2 block text-sm font-black text-slate-700">{field.label}</span>
+                {field.multiline ? (
+                  <textarea
+                    className="input-field min-h-[110px] resize-y"
+                    value={texts[field.key]}
+                    onChange={(event) => onChange(field.key, event.target.value)}
+                  />
+                ) : (
+                  <input
+                    className="input-field"
+                    value={texts[field.key]}
+                    onChange={(event) => onChange(field.key, event.target.value)}
+                  />
+                )}
+              </label>
+            ))}
+          </div>
+        </section>
+      ))}
+      <section className="rounded-3xl border border-white/10 bg-white p-4 text-slate-900 shadow-card sm:p-5">
+        <p className="text-xs font-bold tracking-widest text-brand-600">SERVICE COPY</p>
+        <h3 className="mt-2 text-xl font-black">متن اختصاصی هر خدمت</h3>
+        <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
+          این فهرست با خدمات فعال در تب سایت و منوها سینک است. هر خدمتی حذف یا غیرفعال شود، از فرم درخواست و از این بخش حذف می‌شود.
+        </p>
+        <div className="mt-5 space-y-4">
+          {serviceTags.filter((tag) => tag.enabled).map((tag) => {
+            const defaultCopy = {
+              summary: "",
+              lead: "",
+              vehiclePlaceholder: texts.vehiclePlaceholder,
+              detailsCsv: "",
+              notesPlaceholder: texts.notesPlaceholder,
+            };
+            const copy = { ...defaultCopy, ...(serviceCopies[tag.id] ?? {}) };
+
+            return (
+              <div key={tag.id} className="rounded-2xl border border-slate-200 p-4">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="h-4 w-4 rounded-full" style={{ backgroundColor: tag.color }} />
+                  <div>
+                    <h4 className="font-black text-slate-950">{tag.label}</h4>
+                    <p className="mt-1 text-xs font-bold text-slate-400" dir="ltr">{tag.href}</p>
+                  </div>
+                </div>
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-black text-slate-700">توضیح کارت سرویس</span>
+                    <textarea className="input-field min-h-[90px] resize-y" value={copy.summary} onChange={(event) => onServiceCopyChange(tag.id, { summary: event.target.value })} />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-black text-slate-700">راهنمای بخش خودرو</span>
+                    <textarea className="input-field min-h-[90px] resize-y" value={copy.lead} onChange={(event) => onServiceCopyChange(tag.id, { lead: event.target.value })} />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-black text-slate-700">placeholder خودرو</span>
+                    <input className="input-field" value={copy.vehiclePlaceholder} onChange={(event) => onServiceCopyChange(tag.id, { vehiclePlaceholder: event.target.value })} />
+                  </label>
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-black text-slate-700">placeholder توضیحات</span>
+                    <input className="input-field" value={copy.notesPlaceholder} onChange={(event) => onServiceCopyChange(tag.id, { notesPlaceholder: event.target.value })} />
+                  </label>
+                  <label className="block lg:col-span-2">
+                    <span className="mb-2 block text-sm font-black text-slate-700">گزینه‌های جزئیات این خدمت، هر گزینه در یک خط</span>
+                    <textarea className="input-field min-h-[130px] resize-y" value={copy.detailsCsv} onChange={(event) => onServiceCopyChange(tag.id, { detailsCsv: event.target.value })} />
+                  </label>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <button type="submit" className="w-full rounded-2xl bg-brand-500 px-5 py-4 font-black text-white transition hover:bg-brand-600">
+        ذخیره متن‌های فرم
+      </button>
+    </form>
   );
 }
 

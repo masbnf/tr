@@ -65,6 +65,12 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <Link
+            href="/panel"
+            className="font-black text-[15px] px-5 py-2 rounded-lg border border-white/25 text-white transition-colors hover:bg-white/10"
+          >
+            پنل شخصی
+          </Link>
+          <Link
             href="/request"
             className="font-black text-[15px] px-5 py-2 rounded-lg transition-colors shadow-md text-white hover:opacity-90"
             style={{ background: "#e8002a" }}
@@ -122,6 +128,13 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
           >
             درخواست سرویس
+          </Link>
+          <Link
+            href="/panel"
+            className="font-black text-sm py-3 rounded-xl border border-white/20 text-center text-white transition-colors hover:bg-white/10"
+            onClick={() => setOpen(false)}
+          >
+            پنل شخصی
           </Link>
         </div>
       </div>

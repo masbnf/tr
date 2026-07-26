@@ -9,6 +9,12 @@ export default function AdminLoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const getRedirectTarget = () => {
+    const next = new URLSearchParams(window.location.search).get("next");
+    if (next?.startsWith("/") && !next.startsWith("//")) return next;
+    return "/admin";
+  };
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -26,7 +32,7 @@ export default function AdminLoginForm() {
         return;
       }
 
-      router.push("/admin");
+      router.push(getRedirectTarget());
       router.refresh();
     } catch {
       setError("ارتباط با سرور برقرار نشد.");

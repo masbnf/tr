@@ -4,6 +4,8 @@ import { NextRequest } from "next/server";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET ?? "dev-secret-change-me");
 
+export type AccessRole = "admin";
+
 export async function verifyAdminPassword(password: string): Promise<boolean> {
   const hash = process.env.ADMIN_PASSWORD_HASH ?? "";
   return bcrypt.compare(password, hash);
@@ -17,12 +19,21 @@ export async function signAdminToken(): Promise<string> {
 }
 
 export async function verifyAdminToken(token: string): Promise<boolean> {
+  return (await getTokenRole(token)) === "admin";
+}
+
+export async function getTokenRole(token: string): Promise<AccessRole | null> {
   try {
     const { payload } = await jwtVerify(token, secret);
-    return payload.role === "admin";
+    return payload.role === "admin" ? "admin" : null;
   } catch {
-    return false;
+    return null;
   }
+}
+
+export function getRolePanelPath(role: AccessRole): string {
+  if (role === "admin") return "/admin";
+  return "/admin";
 }
 
 /**

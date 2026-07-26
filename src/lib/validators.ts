@@ -6,7 +6,7 @@ export const createRequestSchema = z.object({
   name:        z.string().min(2, "نام باید حداقل ۲ حرف باشد"),
   phone:       z.string().regex(/^09[0-9]{9}$/, "شماره موبایل معتبر نیست"),
   serviceType: z.nativeEnum(ServiceType, { message: "نوع سرویس انتخاب نشده" }),
-  description: z.string().max(500).optional(),
+  description: z.string().max(2000).optional(),
   locationLat: z.number({ message: "لوکیشن دریافت نشد" }),
   locationLng: z.number({ message: "لوکیشن دریافت نشد" }),
 });
