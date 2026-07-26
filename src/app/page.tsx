@@ -186,7 +186,7 @@ export default function LandingPage() {
         className="relative flex flex-col overflow-hidden bg-[#090b12]"
         style={{
           backgroundImage:
-            "linear-gradient(180deg, rgba(6,8,14,0.72) 0%, rgba(6,8,14,0.84) 38%, rgba(6,8,14,0.9) 100%), url('/images/industrial-sections-bg.jpg')",
+            "linear-gradient(180deg, rgba(6,8,14,0.48) 0%, rgba(6,8,14,0.58) 38%, rgba(6,8,14,0.68) 100%), url('/images/industrial-sections-bg.jpg')",
           backgroundAttachment: "fixed",
           backgroundPosition: "center top",
           backgroundRepeat: "repeat-y",
@@ -195,7 +195,7 @@ export default function LandingPage() {
       >
 
         {/* ══ STATS BAR ════════════════════════════════════════════════════ */}
-        <section className="order-2 bg-black/24 backdrop-blur-[1px] lg:order-1">
+        <section className="order-2 bg-black/12 backdrop-blur-[1px] lg:order-1">
           <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4">
             {STATS.map((s, i) => (
               <div key={s.l} className={`text-center py-7 px-4 ${i % 2 === 0 && i < 2 ? "border-b md:border-b-0 border-white/10" : ""} ${i < 3 ? "md:border-l border-white/10" : ""}`}>
@@ -207,7 +207,7 @@ export default function LandingPage() {
         </section>
 
         {/* ══ SERVICES ════════════════════════════════════════════════════ */}
-        <section id="services" className="order-1 scroll-mt-24 bg-black/18 px-3 pb-16 pt-8 backdrop-blur-[1px] sm:px-6 lg:order-2 lg:pt-16">
+        <section id="services" className="order-1 scroll-mt-24 bg-black/10 px-3 pb-16 pt-8 backdrop-blur-[1px] sm:px-6 lg:order-2 lg:pt-16">
           <div className="max-w-6xl mx-auto">
             {/* Heading is part of the desktop "چه کمکی می‌تونیم بکنیم؟" section
                 intro; the mobile hero already introduces the service, so the
@@ -233,7 +233,7 @@ export default function LandingPage() {
             process timeline (horizontal on desktop, vertical on mobile),
             both rendered from the shared STEPS data source above.
         ══════════════════════════════════════════════════════════════════ */}
-        <section id="how" className="order-3 scroll-mt-24 border-t border-white/10 bg-black/28 px-6 py-16 backdrop-blur-[1px] sm:py-20 lg:py-28">
+        <section id="how" className="order-3 scroll-mt-24 border-t border-white/10 bg-black/16 px-6 py-16 backdrop-blur-[1px] sm:py-20 lg:py-28">
           <div className="max-w-6xl mx-auto">
 
             {/* Header */}
@@ -317,7 +317,7 @@ export default function LandingPage() {
         </section>
 
         {/* ══ CTA BAND ════════════════════════════════════════════════════ */}
-        <section className="relative order-4 overflow-hidden bg-black/30 px-6 py-20 backdrop-blur-[1px]">
+        <section className="relative order-4 overflow-hidden bg-black/18 px-6 py-20 backdrop-blur-[1px]">
           {/* Geometric accent shapes */}
           <div className="absolute inset-0 pointer-events-none select-none" aria-hidden>
             <div className="absolute rounded-full"
