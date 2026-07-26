@@ -282,7 +282,7 @@ export default function RequestForm() {
   return (
     <form onSubmit={submit} className="rounded-[1.15rem] border border-slate-200 bg-white p-3 text-slate-950 shadow-[0_24px_80px_rgba(15,23,42,0.18)] sm:rounded-3xl sm:p-7">
       <header className="mb-4 border-b border-slate-200 pb-4 sm:mb-7 sm:pb-6">
-        <button type="button" onClick={() => router.push("/")} className="mb-3 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black text-slate-600 transition hover:border-cyan-400 hover:text-cyan-700 sm:mb-5 sm:px-4 sm:text-sm">
+        <button type="button" onClick={() => router.push("/")} className="mb-3 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black text-slate-600 transition sm:mb-5 sm:px-4 sm:text-sm sm:hover:border-cyan-400 sm:hover:text-cyan-700">
           بازگشت
         </button>
         <p className="text-xs font-black tracking-widest text-cyan-600">{text.badge}</p>
@@ -293,13 +293,13 @@ export default function RequestForm() {
       <div className="grid gap-3 sm:gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <section className="-mx-3 border-y border-slate-200 bg-slate-50/70 px-3 py-4 sm:mx-0 sm:rounded-2xl sm:border sm:bg-white sm:p-4 xl:col-span-2">
           <div className="mb-3 flex items-end justify-between gap-3 sm:mb-5">
-            <div>
+            <div className="min-w-0">
               <h2 className="text-lg font-black sm:text-xl">{text.serviceTitle}</h2>
               <p className="mt-1 line-clamp-2 text-xs font-bold leading-6 text-slate-500 sm:mt-2 sm:text-sm sm:leading-7">{text.serviceDescription}</p>
             </div>
             <span className="text-xs font-black text-slate-400">{serviceTags.length} خدمت فعال</span>
           </div>
-          <div className="-mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-2 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-2 xl:grid-cols-5">
             {serviceTags.map((tag, index) => {
               const active = tag.id === selectedTag?.id;
               const copy = { ...getFallbackCopy(tag), ...(settings.requestServiceCopies[tag.id] ?? {}) };
@@ -311,16 +311,16 @@ export default function RequestForm() {
                     setSelectedTagId(tag.id);
                     setDetails([]);
                   }}
-                  className={`group relative min-h-[112px] w-[74vw] max-w-[280px] shrink-0 snap-center overflow-hidden rounded-2xl border p-3 text-right transition sm:min-h-[132px] sm:p-4 md:w-auto md:max-w-none xl:min-h-[150px] ${
-                    active ? "border-slate-950 bg-slate-950 text-white shadow-[0_18px_50px_rgba(15,23,42,0.25)]" : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white"
+                  className={`relative min-h-[96px] w-full overflow-hidden rounded-2xl border p-2.5 text-right transition sm:min-h-[132px] sm:p-4 xl:min-h-[150px] ${
+                    active ? "border-slate-950 bg-slate-950 text-white shadow-[0_14px_34px_rgba(15,23,42,0.22)]" : "border-slate-200 bg-white sm:bg-slate-50 sm:hover:border-slate-300 sm:hover:bg-white"
                   }`}
                 >
                   <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: tag.color }} />
-                  <span className={`mb-3 flex h-8 w-8 items-center justify-center rounded-xl text-[11px] font-black sm:mb-4 sm:h-9 sm:w-9 sm:text-xs ${active ? "bg-white text-slate-950" : "bg-white text-slate-500 shadow-sm"}`}>
+                  <span className={`mb-2 flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-black sm:mb-4 sm:h-9 sm:w-9 sm:rounded-xl sm:text-xs ${active ? "bg-white text-slate-950" : "bg-slate-100 text-slate-500 shadow-sm sm:bg-white"}`}>
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="block text-sm font-black leading-6 sm:text-base sm:leading-7">{tag.label}</span>
-                  <span className={`mt-1.5 line-clamp-2 block text-[11px] font-bold leading-5 sm:mt-2 sm:text-xs sm:leading-6 ${active ? "text-white/70" : "text-slate-500"}`}>{copy.summary}</span>
+                  <span className="line-clamp-2 block break-words text-[13px] font-black leading-5 sm:text-base sm:leading-7">{tag.label}</span>
+                  <span className={`mt-1 hidden text-xs font-bold leading-6 sm:line-clamp-2 ${active ? "text-white/70" : "text-slate-500"}`}>{copy.summary}</span>
                 </button>
               );
             })}
@@ -348,7 +348,7 @@ export default function RequestForm() {
             {detailOptions.map((item) => {
               const checked = details.includes(item);
               return (
-                <button key={item} type="button" onClick={() => toggleDetail(item)} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-3 text-right text-xs font-black transition sm:px-4 sm:py-4 sm:text-sm ${checked ? "border-cyan-500 bg-cyan-50 text-cyan-800" : "border-slate-200 bg-slate-50 hover:border-cyan-300"}`}>
+                <button key={item} type="button" onClick={() => toggleDetail(item)} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-3 text-right text-xs font-black transition sm:px-4 sm:py-4 sm:text-sm ${checked ? "border-cyan-500 bg-cyan-50 text-cyan-800" : "border-slate-200 bg-slate-50 sm:hover:border-cyan-300"}`}>
                   <span>{item}</span>
                   <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-xs ${checked ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-300 bg-white text-transparent"}`}>
                     ✓
@@ -393,7 +393,7 @@ export default function RequestForm() {
 
         <section className="rounded-2xl border border-slate-200 p-3 sm:p-4">
           <h2 className="text-lg font-black sm:text-xl">{text.imagesTitle}</h2>
-          <label className="mt-3 flex min-h-[104px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center transition hover:border-cyan-400 hover:bg-cyan-50 sm:mt-4 sm:min-h-[150px]">
+          <label className="mt-3 flex min-h-[104px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center transition sm:mt-4 sm:min-h-[150px] sm:hover:border-cyan-400 sm:hover:bg-cyan-50">
             <span className="text-2xl font-black text-cyan-600 sm:text-3xl">+</span>
             <span className="mt-2 text-xs font-black text-slate-700 sm:text-sm">{text.imageUploadLabel}</span>
             <input type="file" accept="image/*" multiple className="hidden" onChange={handleImages} />
@@ -420,7 +420,7 @@ export default function RequestForm() {
         <div className="hidden text-sm font-bold text-slate-500 sm:block">
           {text.selectedServiceLabel}: <span className="text-slate-900">{selectedTag?.label ?? "انتخاب نشده"}</span>
         </div>
-        <button type="submit" disabled={submitting} className="w-full rounded-2xl bg-[#2388bd] px-8 py-3.5 text-sm font-black text-white transition hover:bg-[#1677aa] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4 sm:text-base">
+        <button type="submit" disabled={submitting} className="w-full rounded-2xl bg-[#2388bd] px-8 py-3.5 text-sm font-black text-white transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4 sm:text-base sm:hover:bg-[#1677aa]">
           {submitting ? text.submitLoadingLabel : text.submitLabel}
         </button>
       </footer>
