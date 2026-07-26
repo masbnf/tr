@@ -280,26 +280,26 @@ export default function RequestForm() {
   };
 
   return (
-    <form onSubmit={submit} className="rounded-3xl border border-slate-200 bg-white p-5 text-slate-950 shadow-[0_24px_80px_rgba(15,23,42,0.18)] sm:p-7">
-      <header className="mb-7 border-b border-slate-200 pb-6">
-        <button type="button" onClick={() => router.push("/")} className="mb-5 rounded-xl border border-slate-200 px-4 py-2 text-sm font-black text-slate-600 transition hover:border-cyan-400 hover:text-cyan-700">
+    <form onSubmit={submit} className="rounded-[1.15rem] border border-slate-200 bg-white p-3 text-slate-950 shadow-[0_24px_80px_rgba(15,23,42,0.18)] sm:rounded-3xl sm:p-7">
+      <header className="mb-4 border-b border-slate-200 pb-4 sm:mb-7 sm:pb-6">
+        <button type="button" onClick={() => router.push("/")} className="mb-3 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black text-slate-600 transition hover:border-cyan-400 hover:text-cyan-700 sm:mb-5 sm:px-4 sm:text-sm">
           بازگشت
         </button>
         <p className="text-xs font-black tracking-widest text-cyan-600">{text.badge}</p>
-        <h1 className="mt-2 text-3xl font-black leading-tight text-slate-950 sm:text-4xl">{text.title}</h1>
-        <p className="mt-3 max-w-3xl text-sm font-bold leading-7 text-slate-500">{text.intro}</p>
+        <h1 className="mt-2 text-2xl font-black leading-tight text-slate-950 sm:text-4xl">{text.title}</h1>
+        <p className="mt-2 max-w-3xl text-xs font-bold leading-6 text-slate-500 sm:mt-3 sm:text-sm sm:leading-7">{text.intro}</p>
       </header>
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="rounded-2xl border border-slate-200 p-4 xl:col-span-2">
-          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div className="grid gap-3 sm:gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+        <section className="-mx-3 border-y border-slate-200 bg-slate-50/70 px-3 py-4 sm:mx-0 sm:rounded-2xl sm:border sm:bg-white sm:p-4 xl:col-span-2">
+          <div className="mb-3 flex items-end justify-between gap-3 sm:mb-5">
             <div>
-              <h2 className="text-xl font-black">{text.serviceTitle}</h2>
-              <p className="mt-2 text-sm font-bold leading-7 text-slate-500">{text.serviceDescription}</p>
+              <h2 className="text-lg font-black sm:text-xl">{text.serviceTitle}</h2>
+              <p className="mt-1 line-clamp-2 text-xs font-bold leading-6 text-slate-500 sm:mt-2 sm:text-sm sm:leading-7">{text.serviceDescription}</p>
             </div>
             <span className="text-xs font-black text-slate-400">{serviceTags.length} خدمت فعال</span>
           </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+          <div className="-mx-3 flex snap-x gap-2 overflow-x-auto px-3 pb-2 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0 xl:grid-cols-5">
             {serviceTags.map((tag, index) => {
               const active = tag.id === selectedTag?.id;
               const copy = { ...getFallbackCopy(tag), ...(settings.requestServiceCopies[tag.id] ?? {}) };
@@ -311,41 +311,44 @@ export default function RequestForm() {
                     setSelectedTagId(tag.id);
                     setDetails([]);
                   }}
-                  className={`group relative min-h-[150px] overflow-hidden rounded-2xl border p-4 text-right transition ${
+                  className={`group relative min-h-[112px] w-[74vw] max-w-[280px] shrink-0 snap-center overflow-hidden rounded-2xl border p-3 text-right transition sm:min-h-[132px] sm:p-4 md:w-auto md:max-w-none xl:min-h-[150px] ${
                     active ? "border-slate-950 bg-slate-950 text-white shadow-[0_18px_50px_rgba(15,23,42,0.25)]" : "border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white"
                   }`}
                 >
                   <span className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: tag.color }} />
-                  <span className={`mb-4 flex h-9 w-9 items-center justify-center rounded-xl text-xs font-black ${active ? "bg-white text-slate-950" : "bg-white text-slate-500 shadow-sm"}`}>
+                  <span className={`mb-3 flex h-8 w-8 items-center justify-center rounded-xl text-[11px] font-black sm:mb-4 sm:h-9 sm:w-9 sm:text-xs ${active ? "bg-white text-slate-950" : "bg-white text-slate-500 shadow-sm"}`}>
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="block text-base font-black leading-7">{tag.label}</span>
-                  <span className={`mt-2 block text-xs font-bold leading-6 ${active ? "text-white/70" : "text-slate-500"}`}>{copy.summary}</span>
+                  <span className="block text-sm font-black leading-6 sm:text-base sm:leading-7">{tag.label}</span>
+                  <span className={`mt-1.5 line-clamp-2 block text-[11px] font-bold leading-5 sm:mt-2 sm:text-xs sm:leading-6 ${active ? "text-white/70" : "text-slate-500"}`}>{copy.summary}</span>
                 </button>
               );
             })}
           </div>
+          <p className="mt-3 rounded-2xl bg-white px-3 py-2 text-xs font-bold leading-6 text-slate-500 shadow-sm sm:hidden">
+            {text.selectedServiceLabel}: <span className="font-black text-slate-950">{selectedTag?.label ?? "انتخاب نشده"}</span>
+          </p>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 p-4">
-          <h2 className="text-xl font-black">{text.vehicleTitle}</h2>
-          <p className="mt-2 text-sm font-bold leading-7 text-slate-500">{selectedCopy.lead}</p>
+        <section className="rounded-2xl border border-slate-200 p-3 sm:p-4">
+          <h2 className="text-lg font-black sm:text-xl">{text.vehicleTitle}</h2>
+          <p className="mt-1 text-xs font-bold leading-6 text-slate-500 sm:mt-2 sm:text-sm sm:leading-7">{selectedCopy.lead}</p>
           <input
             value={vehicleModel}
             onChange={(event) => setVehicleModel(event.target.value)}
-            className="mt-4 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100"
+            className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-right text-sm font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100 sm:mt-4 sm:py-4 sm:text-base"
             placeholder={selectedCopy.vehiclePlaceholder || text.vehiclePlaceholder}
           />
         </section>
 
-        <section className="rounded-2xl border border-slate-200 p-4">
-          <h2 className="text-xl font-black">{text.detailsTitle}</h2>
-          <p className="mt-2 text-sm font-bold leading-7 text-slate-500">{text.detailsDescription}</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <section className="rounded-2xl border border-slate-200 p-3 sm:p-4">
+          <h2 className="text-lg font-black sm:text-xl">{text.detailsTitle}</h2>
+          <p className="mt-1 text-xs font-bold leading-6 text-slate-500 sm:mt-2 sm:text-sm sm:leading-7">{text.detailsDescription}</p>
+          <div className="mt-3 grid gap-2 sm:mt-4 sm:grid-cols-2 sm:gap-3">
             {detailOptions.map((item) => {
               const checked = details.includes(item);
               return (
-                <button key={item} type="button" onClick={() => toggleDetail(item)} className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-4 text-right text-sm font-black transition ${checked ? "border-cyan-500 bg-cyan-50 text-cyan-800" : "border-slate-200 bg-slate-50 hover:border-cyan-300"}`}>
+                <button key={item} type="button" onClick={() => toggleDetail(item)} className={`flex items-center justify-between gap-3 rounded-2xl border px-3 py-3 text-right text-xs font-black transition sm:px-4 sm:py-4 sm:text-sm ${checked ? "border-cyan-500 bg-cyan-50 text-cyan-800" : "border-slate-200 bg-slate-50 hover:border-cyan-300"}`}>
                   <span>{item}</span>
                   <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-xs ${checked ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-300 bg-white text-transparent"}`}>
                     ✓
@@ -356,31 +359,31 @@ export default function RequestForm() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 p-4">
-          <h2 className="text-xl font-black">{text.scheduleTitle}</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <section className="rounded-2xl border border-slate-200 p-3 sm:p-4">
+          <h2 className="text-lg font-black sm:text-xl">{text.scheduleTitle}</h2>
+          <div className="mt-3 grid grid-cols-3 gap-2 sm:mt-4 sm:gap-3">
             {dateOptions.map((item) => (
-              <button key={item.id} type="button" onClick={() => setDate(item.id)} className={`rounded-2xl border p-4 text-right transition ${date === item.id ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-200 bg-slate-50"}`}>
-                <span className="block text-sm font-black">{item.title}</span>
+              <button key={item.id} type="button" onClick={() => setDate(item.id)} className={`rounded-2xl border p-2.5 text-right transition sm:p-4 ${date === item.id ? "border-cyan-500 bg-cyan-500 text-white" : "border-slate-200 bg-slate-50"}`}>
+                <span className="block text-xs font-black sm:text-sm">{item.title}</span>
                 <span className="mt-1 block text-xs font-bold opacity-75">{item.subtitle}</span>
               </button>
             ))}
           </div>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4">
             {timeOptions.map((item) => (
-              <button key={item} type="button" onClick={() => setTime(item)} className={`rounded-xl border px-3 py-3 text-sm font-black transition ${time === item ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-slate-200 bg-white"}`}>
+              <button key={item} type="button" onClick={() => setTime(item)} className={`rounded-xl border px-3 py-3 text-xs font-black transition sm:text-sm ${time === item ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-slate-200 bg-white"}`}>
                 {item}
               </button>
             ))}
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 p-4">
-          <h2 className="text-xl font-black">{text.neighborhoodTitle}</h2>
-          <input value={neighborhoodQuery} onChange={(event) => setNeighborhoodQuery(event.target.value)} className="mt-4 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={text.neighborhoodPlaceholder} />
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <section className="rounded-2xl border border-slate-200 p-3 sm:p-4">
+          <h2 className="text-lg font-black sm:text-xl">{text.neighborhoodTitle}</h2>
+          <input value={neighborhoodQuery} onChange={(event) => setNeighborhoodQuery(event.target.value)} className="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-right text-sm font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100 sm:mt-4 sm:py-4 sm:text-base" placeholder={text.neighborhoodPlaceholder} />
+          <div className="mt-3 grid max-h-[260px] gap-2 overflow-y-auto pr-1 sm:mt-4 sm:max-h-none sm:grid-cols-2 sm:overflow-visible sm:pr-0">
             {filteredNeighborhoods.map((item) => (
-              <button key={item.name} type="button" onClick={() => { setNeighborhood(item); setNeighborhoodQuery(item.name); }} className={`rounded-xl border px-4 py-3 text-right text-sm font-bold transition ${neighborhood?.name === item.name ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-slate-200 bg-white"}`}>
+              <button key={item.name} type="button" onClick={() => { setNeighborhood(item); setNeighborhoodQuery(item.name); }} className={`rounded-xl border px-3 py-2.5 text-right text-xs font-bold transition sm:px-4 sm:py-3 sm:text-sm ${neighborhood?.name === item.name ? "border-cyan-500 bg-cyan-50 text-cyan-700" : "border-slate-200 bg-white"}`}>
                 {item.name}
                 <span className="mt-1 block text-xs text-slate-400">زون: {zoneLabel(item.zone)}</span>
               </button>
@@ -388,36 +391,36 @@ export default function RequestForm() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-200 p-4">
-          <h2 className="text-xl font-black">{text.imagesTitle}</h2>
-          <label className="mt-4 flex min-h-[150px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center transition hover:border-cyan-400 hover:bg-cyan-50">
-            <span className="text-3xl font-black text-cyan-600">+</span>
-            <span className="mt-2 text-sm font-black text-slate-700">{text.imageUploadLabel}</span>
+        <section className="rounded-2xl border border-slate-200 p-3 sm:p-4">
+          <h2 className="text-lg font-black sm:text-xl">{text.imagesTitle}</h2>
+          <label className="mt-3 flex min-h-[104px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 text-center transition hover:border-cyan-400 hover:bg-cyan-50 sm:mt-4 sm:min-h-[150px]">
+            <span className="text-2xl font-black text-cyan-600 sm:text-3xl">+</span>
+            <span className="mt-2 text-xs font-black text-slate-700 sm:text-sm">{text.imageUploadLabel}</span>
             <input type="file" accept="image/*" multiple className="hidden" onChange={handleImages} />
           </label>
           {images.length > 0 ? <p className="mt-3 text-sm font-bold text-slate-500">{images.length} تصویر انتخاب شد</p> : null}
         </section>
 
-        <section className="rounded-2xl border border-slate-200 p-4 xl:col-span-2">
-          <h2 className="text-xl font-black">{text.notesTitle}</h2>
-          <textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={5} className="mt-4 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={selectedCopy.notesPlaceholder || text.notesPlaceholder} />
+        <section className="rounded-2xl border border-slate-200 p-3 sm:p-4 xl:col-span-2">
+          <h2 className="text-lg font-black sm:text-xl">{text.notesTitle}</h2>
+          <textarea value={description} onChange={(event) => setDescription(event.target.value)} rows={4} className="mt-3 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-right text-sm font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100 sm:mt-4 sm:py-4 sm:text-base" placeholder={selectedCopy.notesPlaceholder || text.notesPlaceholder} />
         </section>
 
-        <section className="rounded-2xl border border-slate-200 p-4 xl:col-span-2">
-          <h2 className="text-xl font-black">{text.contactTitle}</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-right text-base font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={text.namePlaceholder} />
-            <input value={phone} onChange={(event) => setPhone(event.target.value)} maxLength={11} dir="ltr" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-center text-base font-bold tracking-[0.18em] outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100" placeholder={text.phonePlaceholder} />
+        <section className="rounded-2xl border border-slate-200 p-3 sm:p-4 xl:col-span-2">
+          <h2 className="text-lg font-black sm:text-xl">{text.contactTitle}</h2>
+          <div className="mt-3 grid gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4">
+            <input value={name} onChange={(event) => setName(event.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-right text-sm font-bold outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100 sm:py-4 sm:text-base" placeholder={text.namePlaceholder} />
+            <input value={phone} onChange={(event) => setPhone(event.target.value)} maxLength={11} dir="ltr" className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-center text-sm font-bold tracking-[0.18em] outline-none transition focus:border-cyan-500 focus:bg-white focus:ring-4 focus:ring-cyan-100 sm:py-4 sm:text-base" placeholder={text.phonePlaceholder} />
           </div>
-          <p className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold leading-7 text-slate-500">{text.privacyNote}</p>
+          <p className="mt-3 rounded-2xl bg-slate-50 px-3 py-2.5 text-xs font-bold leading-6 text-slate-500 sm:mt-4 sm:px-4 sm:py-3 sm:text-sm sm:leading-7">{text.privacyNote}</p>
         </section>
       </div>
 
-      <footer className="mt-7 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm font-bold text-slate-500">
+      <footer className="sticky bottom-0 -mx-3 mt-5 flex flex-col gap-3 border-t border-slate-200 bg-white/95 px-3 pb-2 pt-3 backdrop-blur sm:static sm:mx-0 sm:mt-7 sm:flex-row sm:items-center sm:justify-between sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-5 sm:backdrop-blur-0">
+        <div className="hidden text-sm font-bold text-slate-500 sm:block">
           {text.selectedServiceLabel}: <span className="text-slate-900">{selectedTag?.label ?? "انتخاب نشده"}</span>
         </div>
-        <button type="submit" disabled={submitting} className="rounded-2xl bg-[#2388bd] px-8 py-4 font-black text-white transition hover:bg-[#1677aa] disabled:cursor-not-allowed disabled:opacity-60">
+        <button type="submit" disabled={submitting} className="w-full rounded-2xl bg-[#2388bd] px-8 py-3.5 text-sm font-black text-white transition hover:bg-[#1677aa] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-4 sm:text-base">
           {submitting ? text.submitLoadingLabel : text.submitLabel}
         </button>
       </footer>

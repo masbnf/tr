@@ -4,12 +4,12 @@ import RequestForm from "@/components/forms/RequestForm";
 
 export default function RequestPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#061426] px-4 py-8 text-white sm:px-6">
+    <main className="relative min-h-screen overflow-hidden bg-[#061426] px-2 py-3 text-white sm:px-6 sm:py-8">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(0,194,255,0.26),transparent_28%),radial-gradient(circle_at_78%_28%,rgba(232,0,42,0.18),transparent_26%),linear-gradient(145deg,#061426_0%,#0b2440_50%,#07111f_100%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:48px_48px] opacity-45" />
       <div className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
 
-      <section className="relative z-10 mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-7xl items-center justify-center">
+      <section className="relative z-10 mx-auto flex min-h-[calc(100vh-24px)] w-full max-w-7xl items-start justify-center sm:min-h-[calc(100vh-64px)] sm:items-center">
         <div className="grid w-full gap-8 xl:grid-cols-[360px_1fr] xl:items-start">
           <div className="hidden max-w-xl xl:block">
             <Link href="/" className="text-sm font-black tracking-widest text-cyan-200">
@@ -24,7 +24,7 @@ export default function RequestPage() {
           </div>
 
           <div className="mx-auto w-full">
-            <div className="relative rounded-[2rem] border border-cyan-200/30 bg-cyan-100/[0.08] p-3 shadow-[0_0_0_1px_rgba(125,211,252,0.14),0_28px_90px_rgba(8,145,178,0.24)] backdrop-blur-2xl sm:p-4">
+            <div className="relative rounded-[1.35rem] border border-cyan-200/30 bg-cyan-100/[0.08] p-1.5 shadow-[0_0_0_1px_rgba(125,211,252,0.14),0_28px_90px_rgba(8,145,178,0.24)] backdrop-blur-2xl sm:rounded-[2rem] sm:p-4">
               <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/80 to-transparent" />
               <div className="pointer-events-none absolute -left-2 top-24 h-24 w-1 rounded-full bg-cyan-300/70 blur-[2px]" />
               <div className="pointer-events-none absolute -right-2 bottom-20 h-28 w-1 rounded-full bg-cyan-300/60 blur-[2px]" />
