@@ -5,12 +5,17 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@opennextjs/cloudflare": "^1.14.10",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "firebase": "^10.12.3",
@@ -23,6 +28,7 @@
     "react-hot-toast": "^2.4.1",
     "sharp": "^0.35.3",
     "tailwind-merge": "^2.4.0",
+    "wrangler": "^4.59.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

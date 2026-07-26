@@ -5,6 +5,8 @@ node_modules/
 
 # Next.js build output
 .next/
+.open-next/
+.wrangler/
 out/
 
 # Environment variables — NEVER commit these
@@ -13,6 +15,8 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+.dev.vars
+cloudflare-env.d.ts
 
 # Firebase
 .firebase/
